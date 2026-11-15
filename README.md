@@ -11,3 +11,10 @@ A Flask-based job portal application.
 5. Start the app with `python run.py`.
 
 The app uses MySQL by default. Set `DATABASE_URL` to use another SQLAlchemy-supported database. The sample personas use demo credentials and should only be used for local development.
+
+## Deploy on Render
+
+- Leave **Root Directory** blank.
+- Set **Build Command** to `pip install -r requirements.txt`.
+- Set **Start Command** to `gunicorn --bind 0.0.0.0:$PORT run:app`.
+- Configure `SECRET_KEY`, `DATABASE_URL`, and `INITIAL_ADMIN_PASSWORD` in the Render environment.
