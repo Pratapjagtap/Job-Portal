@@ -46,7 +46,7 @@ def index():
 
     jobs = query.order_by(Job.match_score.desc()).all()
 
-    # Default profile user for preview (Elena Vance from screenshot)
+    # Use the demo candidate for unauthenticated previews.
     profile_user = current_user if current_user.is_authenticated else User.query.filter_by(username='elena').first()
     if not profile_user:
         profile_user = User.query.first()
@@ -264,7 +264,7 @@ def database_reseed():
 # ==============================================================================
 @jobs_bp.route('/switch-demo/<username>')
 def switch_demo(username):
-    """Convenience helper to switch between seeker (Elena), employer (NeuralVibe), and admin."""
+    """Convenience helper to switch between the demo seeker, employer, and admin."""
     user = User.query.filter_by(username=username).first()
     if user:
         login_user(user)

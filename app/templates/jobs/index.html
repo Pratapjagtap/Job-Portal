@@ -445,7 +445,6 @@
                             </div>
                             <div class="text-end">
                                 <span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50">Core Strength (98%)</span>
-                                <div class="fs-xxs text-muted mt-1">Elena's Flagship</div>
                             </div>
                         </div>
                     </div>
@@ -531,7 +530,7 @@
                             <strong class="text-warning">System Design & Latency</strong>
                         </div>
                     </div>
-                    <button class="btn cf-btn-secondary w-100" onclick="openCopilotChat()">Start Mock Drill</button>
+                    <button class="btn cf-btn-secondary w-100" disabled>Coming Soon</button>
                 </div>
             </div>
         </div>
@@ -574,7 +573,7 @@
                                         <img src="{{ app.applicant.avatar_url if app.applicant else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160' }}" 
                                              class="cf-avatar-xs" alt="">
                                         <div>
-                                            <div class="fw-bold text-white">{{ app.applicant.full_name or app.applicant.username if app.applicant else 'Candidate' }}</div>
+                                            <div class="fw-bold text-white">{{ app.applicant.full_name if app.applicant and app.applicant.full_name else 'Candidate' }}</div>
                                             <div class="text-muted fs-xxs">{{ app.applicant.headline if app.applicant else '' }}</div>
                                         </div>
                                     </div>
@@ -597,7 +596,7 @@
                                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80" 
                                              class="cf-avatar-xs" alt="">
                                         <div>
-                                            <div class="fw-bold text-white">Elena Vance</div>
+                                            <div class="fw-bold text-white">Candidate</div>
                                             <div class="text-muted fs-xxs">Lead AI Solutions Architect & Systems Strategist</div>
                                         </div>
                                     </div>

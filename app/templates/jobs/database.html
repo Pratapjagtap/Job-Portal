@@ -20,7 +20,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <form method="POST" action="{{ url_for('jobs.database_reseed') }}" onsubmit="return confirm('Restore default database records (NeuralVibe, Synthetix, Elena)?');">
+            <form method="POST" action="{{ url_for('jobs.database_reseed') }}" onsubmit="return confirm('Restore default database records?');">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn cf-btn-secondary fs-xs">
                     <i class="bi bi-arrow-repeat me-1 text-cyan"></i> Re-seed Default Data

@@ -35,9 +35,7 @@ def create_app(config_class=Config):
     # Global Context Processor to guarantee profile_user is available in all views
     @app.context_processor
     def inject_global_vars():
-        user = current_user if current_user.is_authenticated else User.query.filter_by(username='elena').first()
-        if not user:
-            user = User.query.first()
+        user = current_user if current_user.is_authenticated else None
         return dict(profile_user=user)
 
     from app.routes.auth import auth_bp
@@ -66,6 +64,11 @@ def _init_db(app):
             seed(app)
         except Exception as e:
             print("Auto-seed notice:", e)
+
+    demo_user = User.query.filter_by(username='elena', full_name='Elena Vance').first()
+    if demo_user:
+        demo_user.full_name = ''
+        db.session.commit()
 
 
 def role_required(*roles):

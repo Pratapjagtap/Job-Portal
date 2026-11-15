@@ -22,7 +22,7 @@
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
                         {{ form.username.label(class="form-label text-muted fs-xs fw-semibold") }}
-                        {{ form.username(class="form-control cf-input", placeholder="e.g. elena_ai") }}
+                        {{ form.username(class="form-control cf-input", placeholder="Enter a username") }}
                         {% for e in form.username.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
                     </div>
                     <div class="mb-3">

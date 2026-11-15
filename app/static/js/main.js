@@ -4,15 +4,14 @@
  * 1. Three.js 3D Glowing Particle Mesh Wave Simulation
  * 2. Conversational Search & Smart Filter Matrix Engine
  * 3. Dynamic Interactive Skill Blueprint Graph
- * 4. Copilot Assistant with Animated Equalizer Waveform & Chat
- * 5. Quick Apply with AI Tailoring & DB Persistence
- * 6. Real-Time Peer Comparison & ATS Diagnostic Modals
+ * 4. Quick Apply with AI Tailoring & DB Persistence
+ * 5. Real-Time Peer Comparison & ATS Diagnostic Modals
  */
 
 let particleMeshAnimId = null;
 let peerRadarChart = null;
 let skillsMatrixRadarChart = null;
-let activeJobIdForCopilot = 1;
+let activeJobId = 1;
 
 document.addEventListener('DOMContentLoaded', function () {
     // 1. Initialize Three.js 3D Particle Mesh Wave
@@ -214,11 +213,6 @@ function executeAiSearch() {
         }
         if (data.status === 'success' && data.jobs) {
             renderJobCards(data.jobs);
-            // Update speech bubble in copilot with dynamic search synthesis
-            const bubble = document.getElementById('copilot-speech-bubble');
-            if (bubble) {
-                bubble.innerText = `Filtered ${data.jobs.length} roles matching '${payload.prompt || payload.role || 'matrix query'}'. Lead match: ${data.jobs[0]?.title || 'NeuralVibe'}`;
-            }
         }
     })
     .catch(err => {
@@ -453,7 +447,7 @@ function rebalanceSkillGraph() {
    4. Quick Apply with AI Resume Modal & Application Submission
    ========================================================================== */
 function openQuickApplyModal(id, title, company, score, salary, skills) {
-    activeJobIdForCopilot = id;
+    activeJobId = id;
     document.getElementById('apply-job-title').innerText = title;
     document.getElementById('apply-job-company').innerText = `${company} (${salary})`;
     document.getElementById('apply-match-score').innerText = `${score}%`;
@@ -468,7 +462,7 @@ function openQuickApplyModal(id, title, company, score, salary, skills) {
     // Pre-populate intelligent AI cover letter
     const textarea = document.getElementById('apply-cover-letter');
     if (textarea) {
-        textarea.value = `Dear Hiring Team at ${company},\n\nI am thrilled to apply for the ${title} opening. With documented mastery in ${skills || 'Python, Transformers, and Agentic UX'}, my background directly aligns with your deterministic reasoning pipelines and autonomous infrastructure. I look forward to accelerating ${company}'s delivery velocity from day one.\n\nWarm regards,\nElena Vance`;
+        textarea.value = `Dear Hiring Team at ${company},\n\nI am thrilled to apply for the ${title} opening. With documented mastery in ${skills || 'Python, Transformers, and Agentic UX'}, my background directly aligns with your deterministic reasoning pipelines and autonomous infrastructure. I look forward to accelerating ${company}'s delivery velocity from day one.\n\nWarm regards,`;
     }
 
     const modalEl = document.getElementById('quickApplyModal');
@@ -489,7 +483,7 @@ function submitQuickApply() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            job_id: activeJobIdForCopilot,
+            job_id: activeJobId,
             cover_letter: coverLetter
         })
     })
@@ -552,7 +546,7 @@ function renderPeerRadarChart(radarData) {
             labels: labels,
             datasets: [
                 {
-                    label: 'Elena Vance (You)',
+                    label: 'Your Profile',
                     data: youScores,
                     borderColor: '#00f2fe',
                     backgroundColor: 'rgba(0, 242, 254, 0.25)',
@@ -665,7 +659,7 @@ function initSkillsMatrixRadar() {
             ],
             datasets: [
                 {
-                    label: 'Elena Vance Profile',
+                    label: 'Your Profile',
                     data: [96, 98, 97, 78, 92, 95],
                     borderColor: '#00f2fe',
                     backgroundColor: 'rgba(0, 242, 254, 0.25)',
@@ -700,102 +694,6 @@ function initSkillsMatrixRadar() {
 }
 
 /* ==========================================================================
-   8. Copilot Assistant Chat & Waveform Interactivity
-   ========================================================================== */
-function openCopilotChat() {
-    const offcanvasEl = document.getElementById('copilotChatOffcanvas');
-    if (offcanvasEl) {
-        const offcanvas = new bootstrap.Offcanvas(offcanvasEl);
-        offcanvas.show();
-    }
-}
-
-function sendCopilotQuery(promptText) {
-    const input = document.getElementById('copilot-user-input');
-    if (input) input.value = promptText;
-    submitCopilotMessage();
-}
-
-function submitCopilotMessage() {
-    const input = document.getElementById('copilot-user-input');
-    const message = input ? input.value.trim() : '';
-    if (!message) return;
-
-    input.value = '';
-
-    // Append user message bubble
-    const history = document.getElementById('copilot-chat-history');
-    const userMsgEl = document.createElement('div');
-    userMsgEl.className = 'cf-chat-bubble user mb-3';
-    userMsgEl.innerHTML = `
-        <div class="cf-chat-meta text-end text-light">You • Just now</div>
-        <div class="cf-chat-body">${escapeHtml(message)}</div>
-    `;
-    history.appendChild(userMsgEl);
-    history.scrollTop = history.scrollHeight;
-
-    // Pulse equalizer bars faster
-    pulseWaveform(true);
-
-    fetch('/api/ai/copilot-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            message: message,
-            active_job_id: activeJobIdForCopilot
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        pulseWaveform(false);
-
-        // Append assistant response
-        const asstMsgEl = document.createElement('div');
-        asstMsgEl.className = 'cf-chat-bubble assistant mb-3';
-        asstMsgEl.innerHTML = `
-            <div class="cf-chat-meta">Copilot AI • Telemetry 9859 tf/sJ</div>
-            <div class="cf-chat-body">${formatMarkdown(data.reply)}</div>
-        `;
-        history.appendChild(asstMsgEl);
-        history.scrollTop = history.scrollHeight;
-
-        // Render prompt chips
-        const chipsContainer = document.getElementById('copilot-chips');
-        if (chipsContainer && data.suggested_prompts) {
-            chipsContainer.innerHTML = data.suggested_prompts.map(p => 
-                `<button class="btn btn-sm cf-chip" onclick="sendCopilotQuery('${p.replace(/'/g, "\\'")}')">${p}</button>`
-            ).join('');
-        }
-    })
-    .catch(err => {
-        pulseWaveform(false);
-        console.error(err);
-    });
-}
-
-function pulseWaveform(active) {
-    const bars = document.querySelectorAll('.cf-waveform-bars .bar');
-    bars.forEach(b => {
-        b.style.animationDuration = active ? '0.4s' : '1.2s';
-    });
-}
-
-function clearCopilotSession() {
-    const history = document.getElementById('copilot-chat-history');
-    if (history) {
-        history.innerHTML = `
-            <div class="cf-chat-bubble assistant mb-3">
-                <div class="cf-chat-meta">Copilot AI • Reset</div>
-                <div class="cf-chat-body">Context reinitialized. How may I assist your search today?</div>
-            </div>`;
-    }
-}
-
-function toggleCopilotMute() {
-    alert("Audio simulation waveform active. Text telemetry streamed at 60 Hz.");
-}
-
-/* ==========================================================================
    Utilities & Helpers
    ========================================================================== */
 function showFloatingAlert(message, category = 'info') {
@@ -817,16 +715,6 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text == null ? '' : text;
     return div.innerHTML;
-}
-
-function formatMarkdown(text) {
-    if (!text) return '';
-    return text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/• (.*?)\n/g, '<li>$1</li>')
-        .replace(/\n\n/g, '<br><br>')
-        .replace(/\n/g, '<br>');
 }
 
 function sortJobsBy(criterion) {

@@ -137,88 +137,6 @@ def match_careers():
     })
 
 
-@api_bp.route('/ai/copilot-chat', methods=['POST'])
-@csrf.exempt
-def copilot_chat():
-    """Real-time CareerForge AI Copilot query responder."""
-    data = request.get_json(silent=True) or {}
-    message = (data.get('message') or '').strip().lower()
-    active_job_id = data.get('active_job_id')
-
-    active_job = None
-    if active_job_id:
-        active_job = db.session.get(Job, int(active_job_id))
-
-    # Contextual dynamic response synthesis
-    if 'neuralvibe' in message or (active_job and 'neuralvibe' in active_job.company.lower()) or '98' in message:
-        response_text = (
-            "**NeuralVibe Analysis (98% AI Fit)**:\n"
-            "• **Key Synergy**: Your background in **Python**, **Transformer Foundations**, and **Agentic UX** mirrors 100% of their stack requirements.\n"
-            "• **Compensation**: The offering range ($160k - $210k) lands squarely within your target bracket ($160k - $220k).\n"
-            "• **Strategy**: Their engineering team values deterministic tool use in autonomous loops. I have pre-formatted an AI Resume highlighting your latency optimization."
-        )
-        suggested = [
-            "Quick Apply to NeuralVibe with AI Resume",
-            "Generate custom interview prep questions",
-            "Show peer percentile ranking"
-        ]
-    elif 'synthetix' in message or (active_job and 'synthetix' in active_job.company.lower()) or 'design' in message:
-        response_text = (
-            "**Synthetix Breakdown (91% Match)**:\n"
-            "• **Core Strengths**: Your 3D interaction work with **Three.js** and generative interface prototyping gives you a top-5% candidate profile.\n"
-            "• **Working Model**: Hybrid in NYC with flexible quarterly team sprints.\n"
-            "• **Gap to 98%**: Adding more WebGPU shaders or generative canvas telemetry to your blueprint will bridge the remaining 7% match gap."
-        )
-        suggested = [
-            "Simulate peer comparison radar",
-            "Draft cover letter for Synthetix",
-            "What skills boost this score to 98%?"
-        ]
-    elif 'ats' in message or 'score' in message or 'resume' in message:
-        response_text = (
-            "**Auto-ATS Resume Diagnostic (Current: 82%)**:\n"
-            "• **Detected Strengths**: Strong semantic density around *Python*, *Transformers*, and *Agentic Architecture*.\n"
-            "• **Optimization Opportunity**: Adding quantifiable latency metrics (e.g. *reduced inference latency by 42% via TensorRT-LLM*) will immediately elevate your score to **94%+**.\n"
-            "• **Recommendation**: Click **'Optimize Resume'** to auto-inject high-signal industry keywords."
-        )
-        suggested = [
-            "Auto-optimize resume to 95%",
-            "Scan for missing ATS keywords",
-            "Show matched skill blueprint"
-        ]
-    elif 'salary' in message or 'compensation' in message:
-        response_text = (
-            "**Market Compensation Intelligence**:\n"
-            "• **Lead AI Solutions Architect**: 75th percentile benchmark is **$185,000 - $210,000** for remote US/Global.\n"
-            "• **Senior Interactive Designer**: NYC hybrid market bands range from **$150,000 to $190,000** + equity packages.\n"
-            "• Your current skill blueprint commands a **+18.4% premium** over standard full-stack profiles due to Agentic UX specialization."
-        )
-        suggested = [
-            "Compare top 3 paying remote roles",
-            "Negotiation script for NeuralVibe",
-            "Explore highest growth AI skills"
-        ]
-    else:
-        response_text = (
-            f"**CareerForge AI Copilot Active** ⚡\n\n"
-            f"I am actively monitoring **{Job.query.filter_by(is_active=True).count()} live openings** tailored to your Skill Blueprint. "
-            f"Currently, **Lead AI Solutions Architect** at NeuralVibe leads your match queue with **98% compatibility**.\n\n"
-            f"How would you like to proceed? I can draft tailored resumes, simulate interview drills, or refine your smart filter matrix."
-        )
-        suggested = [
-            "Why is NeuralVibe a 98% match?",
-            "How do I raise my ATS score from 82%?",
-            "Compare NeuralVibe vs Synthetix"
-        ]
-
-    return jsonify({
-        'status': 'success',
-        'reply': response_text,
-        'suggested_prompts': suggested,
-        'audio_waveform': True
-    })
-
-
 @api_bp.route('/ai/quick-apply', methods=['POST'])
 @csrf.exempt
 def quick_apply():
@@ -233,7 +151,7 @@ def quick_apply():
     if not job:
         return jsonify({'status': 'error', 'message': 'Job not found.'}), 404
 
-    # Determine user (current logged in or default Elena demo user)
+    # Determine the signed-in user or use the demo profile.
     user = current_user if current_user.is_authenticated else User.query.filter_by(role='seeker').first()
     if not user:
         user = User.query.first()

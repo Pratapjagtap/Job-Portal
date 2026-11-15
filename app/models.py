@@ -15,7 +15,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # CareerForge AI profile enhancements
-    full_name = db.Column(db.String(100), default='Elena Vance')
+    full_name = db.Column(db.String(100), default='')
     headline = db.Column(db.String(150), default='Lead AI Solutions Architect & Systems Strategist')
     avatar_url = db.Column(
         db.String(300),
