@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %}Custom Profile — CareerForge AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="cf-modal-badge"><i class="bi bi-person-badge-fill me-1"></i> Persona Center</span>
+                <span class="badge bg-secondary fs-xs">ID #{{ user.id }} • Role: {{ user.role|capitalize }}</span>
+            </div>
+            <h2 class="text-white fw-bold mb-0">Custom Candidate Profile</h2>
+            <p class="text-muted fs-sm mb-0">Customize your skills vector, headline, and compensation to recalculate ATS matches.</p>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('jobs.index') }}" class="btn cf-btn-secondary fs-xs">
+                <i class="bi bi-grid-fill me-1"></i> Back to Discover
+            </a>
+            <a href="{{ url_for('jobs.database_explorer', table='users') }}" class="btn cf-btn-cyan fs-xs">
+                <i class="bi bi-database me-1"></i> View in Database
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        
+        <!-- LEFT COLUMN: LIVE PROFILE PREVIEW CARD -->
+        <div class="col-lg-5 col-xl-4">
+            <div class="cf-glass-card p-4 sticky-top" style="top: 85px;">
+                <div class="text-center mb-3">
+                    <div class="position-relative d-inline-block mb-3">
+                        <img src="{{ user.avatar_url or 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80' }}" 
+                             alt="{{ user.full_name }}" class="rounded-circle border border-2 border-info shadow-lg" 
+                             style="width: 100px; height: 100px; object-fit: cover;">
+                        <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-cyan text-dark font-monospace fw-bold" style="font-size: 0.7rem;">
+                            {{ user.matches_pct }}% Fit
+                        </span>
+                    </div>
+
+                    <h4 class="text-white fw-bold mb-1">{{ user.full_name or user.username }}</h4>
+                    <p class="text-cyan fs-xs fw-semibold mb-1">{{ user.headline }}</p>
+                    <span class="text-muted fs-xxs">@{{ user.username }} • {{ user.email }}</span>
+                </div>
+
+                <!-- Live Metrics Summary -->
+                <div class="cf-telemetry-card p-3 mb-3">
+                    <div class="row text-center g-2">
+                        <div class="col-6 border-end border-secondary border-opacity-25">
+                            <div class="text-muted fs-xxs text-uppercase">ATS Compatibility</div>
+                            <div class="text-success fw-bold fs-4">{{ user.ats_score }}%</div>
+                            <div class="text-muted fs-xxs">Neural Parser Rank</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted fs-xxs text-uppercase">Top AI Match</div>
+                            <div class="text-cyan fw-bold fs-4">{{ user.matches_pct }}%</div>
+                            <div class="text-muted fs-xxs">NeuralVibe Ready</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compensation & Model -->
+                <div class="cf-box-dark p-3 mb-3 fs-xs">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Target Compensation:</span>
+                        <span class="text-white fw-bold">${{ (user.target_salary_min or 160000) // 1000 }}k - ${{ (user.target_salary_max or 220000) // 1000 }}k/yr</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-0">
+                        <span class="text-muted">Working Model:</span>
+                        <span class="badge bg-purple bg-opacity-25 text-purple">{{ user.preferred_model or 'Remote' }}</span>
+                    </div>
+                </div>
+
+                <!-- Verified Skills Vector -->
+                <div class="mb-3">
+                    <div class="text-muted fs-xs mb-2 fw-semibold">Active Blueprint Skills:</div>
+                    <div class="d-flex gap-1 flex-wrap">
+                        {% for s in user.get_skills_list() %}
+                        <span class="cf-skill-tag fs-xxs">✓ {{ s }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Executive Bio Snippet -->
+                {% if user.resume_summary %}
+                <div class="cf-box-dark p-3 fs-xs text-muted">
+                    <div class="text-cyan fs-xxs fw-bold mb-1">EXECUTIVE SUMMARY</div>
+                    {{ user.resume_summary }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: CUSTOM PROFILE BUILDER / EDITOR -->
+        <div class="col-lg-7 col-xl-8">
+            <div class="cf-glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-white fw-bold mb-0">Custom Profile Builder</h4>
+                    <span class="text-muted fs-xs">Updates reflect live across the entire system</span>
+                </div>
+                <p class="text-muted fs-sm mb-4">
+                    Modify your identity, tech skills, target compensation, and biography. Saving recalculates your ATS and job compatibility scores instantly.
+                </p>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Full Name & Headline -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            {{ form.full_name.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.full_name(class="form-control cf-input", placeholder="e.g. Elena Vance") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.headline.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.headline(class="form-control cf-input", placeholder="e.g. Lead AI Systems & Solutions Architect") }}
+                        </div>
+                    </div>
+
+                    <!-- Skills & Quick Tag Adder -->
+                    <div class="mb-3">
+                        {{ form.skills.label(class="form-label text-muted fs-xs fw-semibold") }}
+                        {{ form.skills(class="form-control cf-input mb-2", id="profile-skills-input", placeholder="Python, Transformers, Agentic UX, WBO, PyTorch, Three.js") }}
+                        
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                            <span class="text-muted fs-xxs me-1">Click to add skill:</span>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('LangGraph')">+ LangGraph</button>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('CUDA')">+ CUDA</button>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('TensorRT')">+ TensorRT</button>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('VectorDB')">+ VectorDB</button>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('WebGPU')">+ WebGPU</button>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('Docker')">+ Docker</button>
+                            <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs py-1" onclick="appendSkill('FastAPI')">+ FastAPI</button>
+                        </div>
+                    </div>
+
+                    <!-- Avatar Preset Selector & Custom URL -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted fs-xs fw-semibold">Choose Avatar Preset or Custom URL</label>
+                        <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                            <div class="cf-avatar-choice" onclick="setAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80')" title="Elena Vance (Default Candidate)">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80" class="cf-avatar-xs" alt="">
+                            </div>
+                            <div class="cf-avatar-choice" onclick="setAvatar('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80')" title="Alex Rivera (AI Engineer)">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80" class="cf-avatar-xs" alt="">
+                            </div>
+                            <div class="cf-avatar-choice" onclick="setAvatar('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80')" title="Sarah Chen (System Architect)">
+                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80" class="cf-avatar-xs" alt="">
+                            </div>
+                            <div class="cf-avatar-choice" onclick="setAvatar('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80')" title="David K (ML Scientist)">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80" class="cf-avatar-xs" alt="">
+                            </div>
+                        </div>
+                        {{ form.avatar_url(class="form-control cf-input font-monospace fs-xs", id="profile-avatar-input", placeholder="https://images.unsplash.com/...") }}
+                    </div>
+
+                    <!-- Salary & Preferred Model -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            {{ form.target_salary_min.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.target_salary_min(class="form-control cf-input", placeholder="160000") }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.target_salary_max.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.target_salary_max(class="form-control cf-input", placeholder="220000") }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.preferred_model.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.preferred_model(class="form-select cf-select") }}
+                        </div>
+                    </div>
+
+                    <!-- Resume Summary / Bio -->
+                    <div class="mb-4">
+                        {{ form.resume_summary.label(class="form-label text-muted fs-xs fw-semibold") }}
+                        {{ form.resume_summary(class="form-control cf-input cf-textarea", rows=5, 
+                           placeholder="Describe your technical architecture milestones, team leadership, and key quantified achievements.") }}
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn cf-btn-gradient-cyan px-4">
+                            <i class="bi bi-save-fill me-1"></i> Save & Recalculate AI Scores
+                        </button>
+                        <a href="{{ url_for('jobs.index') }}" class="btn cf-btn-secondary">Cancel</a>
+                    </div>
+                </form>
+
+                <!-- Submitted Applications History -->
+                {% if applications %}
+                <hr class="border-secondary border-opacity-25 my-4">
+                <h5 class="text-white fw-bold mb-3"><i class="bi bi-send-check text-cyan me-1"></i> My Application Submissions</h5>
+                <div class="table-responsive">
+                    <table class="table cf-table align-middle fs-xs">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Company</th>
+                                <th>AI Match</th>
+                                <th>Status</th>
+                                <th>Applied Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                            <tr>
+                                <td><a href="{{ url_for('jobs.detail', job_id=app.job_id) }}" class="text-white text-decoration-none fw-bold">{{ app.job.title }}</a></td>
+                                <td><span class="text-light">{{ app.job.company }}</span></td>
+                                <td><span class="badge bg-cyan bg-opacity-25 text-cyan">{{ app.match_score_at_apply }}%</span></td>
+                                <td><span class="badge bg-secondary">{{ app.status|capitalize }}</span></td>
+                                <td><span class="text-muted">{{ app.created_at.strftime('%b %d, %Y') }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function appendSkill(skill) {
+    const input = document.getElementById('profile-skills-input');
+    if (!input) return;
+    const current = input.value.trim();
+    if (!current) {
+        input.value = skill;
+    } else {
+        const skillsList = current.split(',').map(s => s.trim().toLowerCase());
+        if (!skillsList.includes(skill.toLowerCase())) {
+            input.value = current + ', ' + skill;
+        }
+    }
+}
+
+function setAvatar(url) {
+    const input = document.getElementById('profile-avatar-input');
+    if (input) input.value = url;
+}
+</script>
+{% endblock %}

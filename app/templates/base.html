@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CareerForge AI — Your Next Leap, Guided by AI{% endblock %}</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Three.js for 3D Mesh Particle Simulation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Chart.js for Skills Matrix Radar Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Futuristic AI Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="careerforge-dark">
+    <!-- Ambient Background Glow Elements -->
+    <div class="ambient-glow glow-cyan"></div>
+    <div class="ambient-glow glow-purple"></div>
+    <div class="ambient-glow glow-magenta"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="cf-navbar-wrapper sticky-top">
+        <nav class="navbar navbar-expand-xl cf-navbar">
+            <div class="container-fluid px-lg-4">
+                <!-- Brand Logo & Name -->
+                <a class="navbar-brand cf-brand d-flex align-items-center gap-2" href="{{ url_for('jobs.index', tab='discover') }}">
+                    <div class="cf-logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="7" width="18" height="13" rx="3" stroke="url(#logo_grad)" stroke-width="2"/>
+                            <path d="M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7" stroke="url(#logo_grad)" stroke-width="2"/>
+                            <path d="M3 12H21" stroke="url(#logo_grad)" stroke-width="1.8" stroke-dasharray="2 2"/>
+                            <circle cx="12" cy="12" r="2.2" fill="#00f2fe"/>
+                            <defs>
+                                <linearGradient id="logo_grad" x1="3" y1="3" x2="21" y2="20" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#00f2fe"/>
+                                    <stop offset="0.5" stop-color="#8b5cf6"/>
+                                    <stop offset="1" stop-color="#ec4899"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <span class="cf-brand-text">CareerForge <span class="cf-ai-badge">AI</span></span>
+                </a>
+
+                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#cfNav">
+                    <i class="bi bi-list fs-3"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="cfNav">
+                    <!-- Center Navigation Tabs -->
+                    <ul class="navbar-nav mx-auto cf-nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link cf-tab-link {% if active_tab == 'discover' or not active_tab %}active{% endif %}" 
+                               href="{{ url_for('jobs.index', tab='discover') }}">
+                                Discover <span class="cf-subtle">(AI Matches)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link cf-tab-link {% if active_tab == 'skills-matrix' %}active{% endif %}" 
+                               href="{{ url_for('jobs.index', tab='skills-matrix') }}">
+                                Skills Matrix
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link cf-tab-link {% if active_tab == 'agent-hub' %}active{% endif %}" 
+                               href="{{ url_for('jobs.index', tab='agent-hub') }}">
+                                Agent Hub
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link cf-tab-link {% if active_tab == 'manage-talent' %}active{% endif %}" 
+                               href="{{ url_for('jobs.index', tab='manage-talent') }}">
+                                Manage Talent
+                            </a>
+                        </li>
+                        <!-- PROMINENT DATABASE LINK -->
+                        <li class="nav-item">
+                            <a class="nav-link cf-tab-link cf-nav-database-link" 
+                               href="{{ url_for('jobs.database_explorer') }}" 
+                               title="Live SQLite Database Viewer & Query Terminal">
+                                <i class="bi bi-database-fill text-cyan me-1"></i> Database
+                            </a>
+                        </li>
+                        <!-- PROMINENT CUSTOM PROFILE LINK -->
+                        <li class="nav-item">
+                            <a class="nav-link cf-tab-link cf-nav-profile-link" 
+                               href="{{ url_for('jobs.profile') }}" 
+                               title="View & Edit Custom Profile & ATS Skills">
+                                <i class="bi bi-person-gear text-purple me-1"></i> Custom Profile
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Right Side: User Profile, Sign In, Registration & Matches Pill -->
+                    <div class="d-flex align-items-center gap-2 cf-user-actions">
+                        
+                        <!-- Role / Profile Capsule Pill -->
+                        <div class="dropdown">
+                            <button class="btn cf-profile-pill d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" title="Click to manage profile or switch persona">
+                                <img src="{{ profile_user.avatar_url if profile_user else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80' }}" 
+                                     alt="Profile Avatar" class="cf-avatar-img">
+                                <span class="cf-matches-badge">
+                                    Matches: <strong id="header-match-pct">{{ profile_user.matches_pct if profile_user else 94 }}%</strong> 
+                                    <span class="cf-triangle-up">▲</span>
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end cf-dropdown-menu">
+                                <li class="dropdown-header text-uppercase fs-xs">Active Persona</li>
+                                <li>
+                                    <div class="px-3 py-1">
+                                        <div class="fw-bold text-white">{{ profile_user.full_name or profile_user.username }}</div>
+                                        <div class="text-muted fs-xxs">{{ profile_user.headline }}</div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('jobs.profile') }}">
+                                        <i class="bi bi-person-circle text-cyan me-2"></i>My Custom Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('jobs.my_applications') }}">
+                                        <i class="bi bi-send-check text-success me-2"></i>My Applications
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('jobs.database_explorer') }}">
+                                        <i class="bi bi-database text-info me-2"></i>Database Explorer
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li class="dropdown-header text-uppercase fs-xs">1-Click Switch Persona</li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('jobs.switch_demo', username='elena') }}">
+                                        <i class="bi bi-person-fill text-cyan me-2"></i>Elena Vance (Candidate 94%)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('jobs.switch_demo', username='neuralvibe') }}">
+                                        <i class="bi bi-building-fill text-purple me-2"></i>NeuralVibe (Employer)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('jobs.switch_demo', username='admin') }}">
+                                        <i class="bi bi-shield-lock-fill text-warning me-2"></i>Admin Console
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                {% if current_user.is_authenticated %}
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Log Out
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a class="dropdown-item text-cyan" href="{{ url_for('auth.login') }}">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('auth.register') }}">
+                                        <i class="bi bi-person-plus me-2"></i>Register
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <!-- Direct Sign In & Register Buttons for Instant Clarity -->
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-sm cf-btn-secondary d-none d-md-inline-block">
+                            Sign In
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-sm cf-btn-gradient-cyan d-none d-md-inline-block">
+                            Register
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('jobs.profile') }}" class="btn btn-sm cf-btn-secondary d-none d-md-inline-block">
+                            <i class="bi bi-person-gear me-1"></i> Edit Profile
+                        </a>
+                        {% endif %}
+
+                        {% if current_user.is_authenticated and current_user.role in ('employer', 'admin') %}
+                        <a href="{{ url_for('jobs.post') }}" class="btn cf-btn-post d-none d-lg-inline-flex align-items-center gap-1">
+                            <i class="bi bi-plus-lg"></i> Post Opening
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Flash Notifications Container -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert cf-alert cf-alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-stars me-2"></i>{{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Dynamic Content -->
+    <main class="cf-main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Global Floating AI Copilot Assistant Widget (Matches Exact Image Widget) -->
+    <div class="cf-copilot-floating" id="copilot-widget">
+        <div class="cf-copilot-card">
+            <!-- Header bar with AI icon and options -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="cf-copilot-avatar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <rect width="24" height="24" rx="6" fill="url(#copilot_grad)"/>
+                            <path d="M7 12H17M12 7V17" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="copilot_grad" x1="0" y1="0" x2="24" y2="24">
+                                    <stop stop-color="#00f2fe"/>
+                                    <stop offset="0.5" stop-color="#8b5cf6"/>
+                                    <stop offset="1" stop-color="#ec4899"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <span class="cf-copilot-title">Copilot Assistant</span>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-link cf-dot-menu p-0 text-muted" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end cf-dropdown-menu">
+                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openCopilotChat()">Expand Full Chat</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="clearCopilotSession()">Reset Context</a></li>
+                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="toggleCopilotMute()">Toggle Audio Simulation</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Dialogue bubble text matching reference screenshot -->
+            <p class="cf-copilot-text" id="copilot-speech-bubble" onclick="openCopilotChat()">
+                Matching opportunities and career gaps matching opportunities and career gaps.
+            </p>
+
+            <!-- Dynamic Animated Frequency Waveform Equalizer -->
+            <div class="cf-waveform-container" onclick="openCopilotChat()" title="Click to chat with Copilot Assistant">
+                <div class="cf-waveform-bars" id="waveform-bars">
+                    <span class="bar bar-1"></span>
+                    <span class="bar bar-2"></span>
+                    <span class="bar bar-3"></span>
+                    <span class="bar bar-4"></span>
+                    <span class="bar bar-5"></span>
+                    <span class="bar bar-6"></span>
+                    <span class="bar bar-7"></span>
+                    <span class="bar bar-8"></span>
+                    <span class="bar bar-9"></span>
+                    <span class="bar bar-10"></span>
+                    <span class="bar bar-11"></span>
+                    <span class="bar bar-12"></span>
+                    <span class="bar bar-13"></span>
+                    <span class="bar bar-14"></span>
+                    <span class="bar bar-15"></span>
+                    <span class="bar bar-16"></span>
+                </div>
+                <div class="cf-telemetry-tag">
+                    <span class="cf-telemetry-dot"></span>
+                    <span class="cf-telemetry-text">9859 tf/sJ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- 1. Quick Apply with AI Resume Modal -->
+    <div class="modal fade" id="quickApplyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content cf-modal-glass">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="cf-modal-badge"><i class="bi bi-stars"></i> AI Hyper-Tailored Application</div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h4 class="text-white fw-bold mb-1" id="apply-job-title">Lead AI Solutions Architect</h4>
+                            <p class="text-muted mb-0" id="apply-job-company">NeuralVibe (Remote)</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="cf-match-pill-large">
+                                <span class="fs-4 fw-bold" id="apply-match-score">98%</span>
+                                <small class="d-block text-cyan">AI Fit Match</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Match telemetry highlights -->
+                    <div class="cf-telemetry-card mb-3 p-3">
+                        <div class="d-flex justify-content-between text-muted fs-xs mb-2">
+                            <span>Vector Similarity: <strong class="text-white">0.984 Cosine</strong></span>
+                            <span>ATS Compatibility: <strong class="text-success">Rank 1 / 48</strong></span>
+                            <span>Salary Fit: <strong class="text-white" id="apply-salary-band">$160k - $210k</strong></span>
+                        </div>
+                        <div class="cf-segmented-bar mb-2">
+                            <span class="seg active"></span>
+                            <span class="seg active"></span>
+                            <span class="seg active"></span>
+                            <span class="seg active"></span>
+                            <span class="seg active"></span>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap" id="apply-skills-tags">
+                            <span class="cf-tag-pill active">✓ Python</span>
+                            <span class="cf-tag-pill active">✓ Transformers</span>
+                            <span class="cf-tag-pill active">✓ Agentic UX</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted fs-sm fw-semibold">AI Auto-Tailored Cover Pitch</label>
+                        <textarea class="form-control cf-input cf-textarea" id="apply-cover-letter" rows="5"></textarea>
+                    </div>
+
+                    <div class="form-check cf-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="attachBlueprintCheck" checked>
+                        <label class="form-check-label text-light fs-xs" for="attachBlueprintCheck">
+                            Attach verified Skill Blueprint & ATS vector signature
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn cf-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn cf-btn-cyan" id="confirmQuickApplyBtn" onclick="submitQuickApply()">
+                        <i class="bi bi-send-fill me-1"></i> Confirm 1-Click Submission
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Real-Time Peer Comparison Modal -->
+    <div class="modal fade" id="peerComparisonModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content cf-modal-glass">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="cf-modal-badge"><i class="bi bi-people-fill"></i> Real-time Peer Comparisons</div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-7">
+                            <h4 class="text-white fw-bold mb-1" id="peer-job-title">Senior Interactive Designer</h4>
+                            <p class="text-muted mb-3" id="peer-job-company">Synthetix (Hybrid, NYC)</p>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="cf-stat-mini-box">
+                                        <div class="text-muted fs-xs">Your Standing</div>
+                                        <div class="text-cyan fw-bold fs-4" id="peer-percentile">Top 4%</div>
+                                        <div class="fs-xxs text-muted">vs 54 active applicants</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="cf-stat-mini-box">
+                                        <div class="text-muted fs-xs">Market Salary</div>
+                                        <div class="text-success fw-bold fs-4">$172,000</div>
+                                        <div class="fs-xxs text-muted">85th percentile band</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-muted fs-xs">
+                                <p class="mb-1"><i class="bi bi-check-circle-fill text-cyan me-1"></i> <strong>Strongest differentiator:</strong> Three.js + Generative UI design systems puts you above 94% of peers.</p>
+                                <p class="mb-0"><i class="bi bi-info-circle-fill text-warning me-1"></i> <strong>Competitive gap:</strong> 12% of competitors have published WebGPU shader packages.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-center">
+                            <div style="height: 240px; position: relative;">
+                                <canvas id="peerRadarCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn cf-btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn cf-btn-cyan" onclick="openApplyForPeerRole()">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Apply With Top-4% Priority
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Auto-ATS Resume Scoring & Diagnostic Modal -->
+    <div class="modal fade" id="atsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content cf-modal-glass">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="cf-modal-badge"><i class="bi bi-speedometer2"></i> Auto-ATS Neural Diagnostic</div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="text-white fw-bold mb-1">Resume Vector ATS Score</h4>
+                            <p class="text-muted mb-0">Evaluated against 1,200+ enterprise AI job descriptions</p>
+                        </div>
+                        <div class="cf-score-circle">
+                            <span class="fs-3 fw-bold text-cyan" id="ats-modal-score">82%</span>
+                            <small class="text-muted d-block fs-xxs">Current</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between text-muted fs-xs mb-1">
+                            <span>Semantic ATS Fit</span>
+                            <span class="text-cyan fw-bold" id="ats-modal-fit-text">82% (Strong)</span>
+                        </div>
+                        <div class="cf-progress-track">
+                            <div class="cf-progress-fill" id="ats-modal-progress-bar" style="width: 82%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="cf-box-dark p-3">
+                                <h6 class="text-success fs-sm mb-2"><i class="bi bi-check2-circle me-1"></i> Matched High-Signal Keywords</h6>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <span class="cf-tag-pill active">Python (Advanced)</span>
+                                    <span class="cf-tag-pill active">Transformers</span>
+                                    <span class="cf-tag-pill active">Agentic UX</span>
+                                    <span class="cf-tag-pill active">FastAPI</span>
+                                    <span class="cf-tag-pill active">PyTorch</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="cf-box-dark p-3">
+                                <h6 class="text-warning fs-sm mb-2"><i class="bi bi-exclamation-triangle me-1"></i> Missing High-Impact Keywords</h6>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <span class="cf-tag-pill warning">+ TensorRT-LLM</span>
+                                    <span class="cf-tag-pill warning">+ Distributed GPU</span>
+                                    <span class="cf-tag-pill warning">+ vLLM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ats-optimized-results" class="d-none">
+                        <div class="alert cf-alert-success mb-3">
+                            <i class="bi bi-check-circle-fill me-2"></i> <strong>ATS Score Elevated to 96%!</strong> Injected high-signal quantized throughput bullets into your vector profile.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn cf-btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn cf-btn-cyan" id="optimizeAtsBtn" onclick="optimizeAtsScore()">
+                        <i class="bi bi-magic me-1"></i> Auto-Optimize to 96%
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Add Skill Node Modal -->
+    <div class="modal fade" id="addSkillModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content cf-modal-glass">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="text-white fw-bold mb-0">Add Skill to Blueprint</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <label class="form-label text-muted fs-sm">Skill Name or Technology</label>
+                    <input type="text" id="new-skill-input" class="form-control cf-input mb-3" placeholder="e.g. LangGraph, CUDA, VectorDB, WebGPU">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-sm cf-btn-secondary" onclick="quickFillSkill('LangGraph')">+ LangGraph</button>
+                        <button type="button" class="btn btn-sm cf-btn-secondary" onclick="quickFillSkill('VectorDB')">+ VectorDB</button>
+                        <button type="button" class="btn btn-sm cf-btn-secondary" onclick="quickFillSkill('WebGPU')">+ WebGPU</button>
+                        <button type="button" class="btn btn-sm cf-btn-secondary" onclick="quickFillSkill('CUDA')">+ CUDA</button>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn cf-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn cf-btn-cyan" onclick="submitAddSkill()">Add to Blueprint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Interactive Copilot Assistant Drawer -->
+    <div class="offcanvas offcanvas-end cf-offcanvas" tabindex="-1" id="copilotChatOffcanvas">
+        <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center gap-2">
+                <div class="cf-copilot-avatar-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <rect width="24" height="24" rx="6" fill="url(#copilot_grad2)"/>
+                        <path d="M7 12H17M12 7V17" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="copilot_grad2" x1="0" y1="0" x2="24" y2="24">
+                                <stop stop-color="#00f2fe"/>
+                                <stop offset="0.5" stop-color="#8b5cf6"/>
+                                <stop offset="1" stop-color="#ec4899"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <h5 class="offcanvas-title text-white fw-bold mb-0">CareerForge Copilot</h5>
+                    <small class="text-cyan fs-xxs">AI Agent Active • Real-time telemetry</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-3">
+            <div class="cf-chat-messages flex-grow-1 overflow-auto pe-1 mb-3" id="copilot-chat-history">
+                <div class="cf-chat-bubble assistant mb-3">
+                    <div class="cf-chat-meta">Copilot AI • Just now</div>
+                    <div class="cf-chat-body">
+                        Hello Elena! I am your autonomous career copilot. I am actively screening 6 hyper-personalized openings. 
+                        <strong>Lead AI Solutions Architect</strong> at NeuralVibe is currently your #1 match at <strong>98%</strong>.
+                        How can I guide your next leap today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="cf-chat-chips mb-2 d-flex gap-2 flex-wrap" id="copilot-chips">
+                <button class="btn btn-sm cf-chip" onclick="sendCopilotQuery('Why is NeuralVibe a 98% match?')">Why 98% at NeuralVibe?</button>
+                <button class="btn btn-sm cf-chip" onclick="sendCopilotQuery('How do I raise my ATS score from 82%?')">Raise ATS to 95%</button>
+                <button class="btn btn-sm cf-chip" onclick="sendCopilotQuery('Compare NeuralVibe vs Synthetix')">Compare Top Roles</button>
+            </div>
+
+            <div class="cf-chat-input-wrapper">
+                <input type="text" class="form-control cf-input" id="copilot-user-input" 
+                       placeholder="Ask Copilot about any role, salary, or resume tip..." 
+                       onkeydown="if(event.key==='Enter') submitCopilotMessage()">
+                <button class="btn cf-btn-send" onclick="submitCopilotMessage()">
+                    <i class="bi bi-send-fill text-cyan"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- CareerForge AI Core Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}My AI Applications — CareerForge AI{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-white fw-bold mb-1">My Submitted Applications</h3>
+            <p class="text-muted fs-sm mb-0">Track real-time adaptive screening, ATS scores, and recruiter reviews</p>
+        </div>
+        <a href="{{ url_for('jobs.index') }}" class="btn cf-btn-gradient-cyan">
+            <i class="bi bi-search me-1"></i> Discover Openings
+        </a>
+    </div>
+
+    {% if applications %}
+    <div class="row g-4">
+        {% for app in applications %}
+        <div class="col-md-6">
+            <div class="cf-glass-card h-100 p-4">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h5 class="text-white fw-bold mb-1">{{ app.job.title }}</h5>
+                        <h6 class="text-muted mb-0">{{ app.job.company }} • {{ app.job.location }}</h6>
+                    </div>
+                    <span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50">
+                        {{ app.match_score_at_apply }}% AI Fit
+                    </span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 my-3 fs-xs text-muted">
+                    <span><i class="bi bi-clock"></i> Applied {{ app.created_at.strftime('%b %d, %Y') }}</span>
+                    <span><i class="bi bi-shield-check text-success"></i> Verified ATS</span>
+                    <span class="badge bg-secondary">{{ app.status|capitalize }}</span>
+                </div>
+
+                {% if app.cover_letter %}
+                <div class="cf-telemetry-card p-3 mb-3 fs-xs text-light opacity-90">
+                    <div class="text-cyan fs-xxs fw-bold mb-1">SUBMITTED COVER PITCH</div>
+                    {{ app.cover_letter[:220] }}{% if app.cover_letter|length > 220 %}…{% endif %}
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('jobs.detail', job_id=app.job_id) }}" class="btn btn-sm cf-btn-secondary w-100">
+                    View Position Terminal <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="cf-glass-card text-center py-5">
+        <i class="bi bi-send-check display-4 text-cyan mb-3 d-block"></i>
+        <h4 class="text-white">No applications submitted yet</h4>
+        <p class="text-muted fs-sm">Review your 94% matches on the Discover tab and submit in 1-click.</p>
+        <a href="{{ url_for('jobs.index') }}" class="btn cf-btn-gradient-cyan mt-2">Explore 98% AI Matches</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

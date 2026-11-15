@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Admin Console — CareerForge AI{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-white fw-bold mb-1">CareerForge AI Control Plane</h3>
+            <p class="text-muted fs-sm mb-0">Platform health, vector matching throughput, and entity governance</p>
+        </div>
+        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50">
+            <i class="bi bi-shield-fill-check me-1"></i> Root Administrator
+        </span>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="cf-glass-card text-center p-3">
+                <h2 class="text-cyan fw-bold mb-1">{{ stats.users }}</h2>
+                <p class="text-muted fs-xs mb-0">Total Platform Personas</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="cf-glass-card text-center p-3">
+                <h2 class="text-success fw-bold mb-1">{{ stats.jobs }}</h2>
+                <p class="text-muted fs-xs mb-0">Active Openings ({{ stats.active_jobs }} live)</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="cf-glass-card text-center p-3">
+                <h2 class="text-purple fw-bold mb-1">{{ stats.applications }}</h2>
+                <p class="text-muted fs-xs mb-0">AI Submitted Applications</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="cf-glass-card text-center p-3">
+                <h2 class="text-warning fw-bold mb-1">98.4%</h2>
+                <p class="text-muted fs-xs mb-0">ATS Engine Precision</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cf-glass-card p-4">
+        <ul class="nav nav-pills cf-nav-tabs mb-4">
+            <li class="nav-item">
+                <button class="nav-link cf-tab-link active" data-bs-toggle="tab" data-bs-target="#users">Personas ({{ users|length }})</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link cf-tab-link" data-bs-toggle="tab" data-bs-target="#jobs">Job Openings ({{ jobs|length }})</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link cf-tab-link" data-bs-toggle="tab" data-bs-target="#apps">Applications ({{ applications|length }})</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Users Tab -->
+            <div class="tab-pane fade show active" id="users">
+                <div class="table-responsive">
+                    <table class="table cf-table align-middle">
+                        <thead>
+                            <tr><th>ID</th><th>User</th><th>Email</th><th>Role</th><th>Registered</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                            <tr>
+                                <td><span class="font-monospace text-muted">#{{ u.id }}</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ u.avatar_url or 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160' }}" 
+                                             class="cf-avatar-xs" alt="">
+                                        <div>
+                                            <div class="fw-bold text-white">{{ u.full_name or u.username }}</div>
+                                            <div class="text-muted fs-xxs">{{ u.headline }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="text-light fs-xs">{{ u.email }}</span></td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if u.role == 'admin' else ('purple' if u.role == 'employer' else 'cyan') }} bg-opacity-25 text-{{ 'danger' if u.role == 'admin' else ('purple' if u.role == 'employer' else 'cyan') }} border border-opacity-50">
+                                        {{ u.role }}
+                                    </span>
+                                </td>
+                                <td><span class="text-muted fs-xs">{{ u.created_at.strftime('%b %d, %Y') }}</span></td>
+                                <td>
+                                    {% if u.id != current_user.id and u.role != 'admin' %}
+                                    <form method="POST" action="{{ url_for('admin.toggle_user', user_id=u.id) }}" class="d-inline">
+                                        <button class="btn btn-sm cf-btn-secondary">
+                                            Make {{ 'Seeker' if u.role == 'employer' else 'Employer' }}
+                                        </button>
+                                    </form>
+                                    {% else %}<span class="text-muted fs-xs">—</span>{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div class="tab-pane fade" id="jobs">
+                <div class="table-responsive">
+                    <table class="table cf-table align-middle">
+                        <thead>
+                            <tr><th>ID</th><th>Title</th><th>Company</th><th>Model</th><th>Match Score</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for j in jobs %}
+                            <tr>
+                                <td><span class="font-monospace text-muted">#{{ j.id }}</span></td>
+                                <td><a href="{{ url_for('jobs.detail', job_id=j.id) }}" class="text-white fw-semibold text-decoration-none">{{ j.title }}</a></td>
+                                <td><span class="text-light">{{ j.company }}</span></td>
+                                <td><span class="badge bg-purple bg-opacity-25 text-purple">{{ j.working_model }}</span></td>
+                                <td><span class="text-cyan fw-bold">{{ j.match_score }}%</span></td>
+                                <td>
+                                    {% if j.is_active %}<span class="badge bg-success bg-opacity-25 text-success">Active</span>
+                                    {% else %}<span class="badge bg-secondary">Archived</span>{% endif %}
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('admin.toggle_job', job_id=j.id) }}" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-{{ 'danger' if j.is_active else 'success' }}">
+                                            {{ 'Deactivate' if j.is_active else 'Activate' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Applications Tab -->
+            <div class="tab-pane fade" id="apps">
+                <div class="table-responsive">
+                    <table class="table cf-table align-middle">
+                        <thead>
+                            <tr><th>ID</th><th>Job</th><th>Applicant</th><th>Fit Score</th><th>Date</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for a in applications %}
+                            <tr>
+                                <td><span class="font-monospace text-muted">#{{ a.id }}</span></td>
+                                <td><a href="{{ url_for('jobs.detail', job_id=a.job_id) }}" class="text-white fw-semibold text-decoration-none">{{ a.job.title }}</a></td>
+                                <td><span class="text-light">{{ a.applicant.full_name or a.applicant.username }}</span></td>
+                                <td><span class="badge bg-cyan bg-opacity-25 text-cyan">{{ a.match_score_at_apply }}%</span></td>
+                                <td><span class="text-muted fs-xs">{{ a.created_at.strftime('%b %d, %Y') }}</span></td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('admin.delete_application', app_id=a.id) }}" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger">Purge</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

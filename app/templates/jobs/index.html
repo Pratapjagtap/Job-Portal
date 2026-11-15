@@ -1,0 +1,623 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-2">
+
+    <!-- TAB 1: DISCOVER (AI MATCHES) - EXACT LAYOUT FROM SCREENSHOT -->
+    <div id="tab-discover" class="cf-tab-panel {% if active_tab == 'discover' or not active_tab %}active{% endif %}">
+        
+        <!-- Hero Section with Title & 3D Particle Wave Mesh -->
+        <div class="cf-hero-section mb-3">
+            <div class="row align-items-center g-0">
+                <div class="col-lg-7 col-xl-6 z-1">
+                    <h1 class="cf-hero-title">Your Next Leap, Guided by AI</h1>
+                </div>
+                <div class="col-lg-5 col-xl-6 position-relative cf-particle-col">
+                    <!-- Three.js 3D Glowing Particle Wave Mesh Canvas -->
+                    <div id="hero-particle-mesh-container" class="cf-particle-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAST GUIDE: How CareerForge AI Works (Easy to Understand) -->
+        <div class="cf-glass-card cf-fast-guide-banner mb-4 p-3 border-info border-opacity-25" id="fastGuideBanner">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-cyan text-dark font-monospace fw-bold"><i class="bi bi-compass-fill me-1"></i> FAST GUIDE</span>
+                    <strong class="text-white fs-sm">How CareerForge AI Works — 5 Key Highlights</strong>
+                </div>
+                <button class="btn btn-link text-muted p-0 fs-xs text-decoration-none" onclick="document.getElementById('fastGuideBanner').style.display='none'">
+                    <i class="bi bi-x-lg"></i> Dismiss
+                </button>
+            </div>
+            <div class="row g-2 text-muted fs-xs">
+                <div class="col-md-4 col-xl-2">
+                    <div class="cf-guide-step p-2 h-100">
+                        <span class="text-cyan fw-bold d-block mb-1">1. Skill Blueprint</span>
+                        Central skill graph & ATS score (82%) with 1-click optimizer.
+                    </div>
+                </div>
+                <div class="col-md-4 col-xl-3">
+                    <div class="cf-guide-step p-2 h-100">
+                        <span class="text-purple fw-bold d-block mb-1">2. AI Conversational Search</span>
+                        Type in plain English or use the Smart Filter Matrix.
+                    </div>
+                </div>
+                <div class="col-md-4 col-xl-3">
+                    <div class="cf-guide-step p-2 h-100">
+                        <span class="text-cyan fw-bold d-block mb-1">3. Matched Openings</span>
+                        Lead AI Architect (98% NeuralVibe) & Senior Designer (91% Synthetix).
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-2">
+                    <div class="cf-guide-step p-2 h-100">
+                        <span class="text-success fw-bold d-block mb-1">4. Live Database Link</span>
+                        Click <a href="{{ url_for('jobs.database_explorer') }}" class="text-cyan text-decoration-none fw-bold">Database</a> in navbar to inspect SQLite tables & queries.
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-2">
+                    <div class="cf-guide-step p-2 h-100">
+                        <span class="text-pink fw-bold d-block mb-1">5. Custom Profile</span>
+                        Click <a href="{{ url_for('jobs.profile') }}" class="text-purple text-decoration-none fw-bold">Profile</a> to customize your skills & identity.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upper Consoles: Conversational Search + Smart Filter Matrix -->
+        <div class="cf-console-grid mb-4">
+            <div class="row g-3">
+                <!-- Left Console: Conversational Search -->
+                <div class="col-lg-6">
+                    <div class="cf-glass-card cf-search-console h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="cf-console-label">Highly intelligent conversational search console</span>
+                            <button class="btn btn-link text-muted p-0 cf-icon-btn" title="AI Prompt Tuner" onclick="toggleSearchSettings()">
+                                <i class="bi bi-gear"></i>
+                            </button>
+                        </div>
+                        <div class="cf-search-input-group">
+                            <input type="text" id="ai-search-prompt" class="form-control cf-input cf-search-input" 
+                                   placeholder="Describe your ideal role or paste your resume... (AI Engine active)"
+                                   value="{{ q }}"
+                                   onkeydown="if(event.key==='Enter') executeAiSearch()">
+                            <button class="btn cf-btn-send-plane" onclick="executeAiSearch()" title="Send to AI Engine">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Console: Smart Filter Matrix -->
+                <div class="col-lg-6">
+                    <div class="cf-glass-card cf-matrix-console h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="cf-console-label">Smart Filter Matrix</span>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-6 col-sm-3">
+                                <select id="filter-role" class="form-select cf-select" onchange="executeAiSearch()">
+                                    <option value="">Role</option>
+                                    <option value="AI Solutions Architect">AI Architect</option>
+                                    <option value="Interactive Designer">UI/UX Designer</option>
+                                    <option value="Agent Engineer">Agent Engineer</option>
+                                    <option value="Research Scientist">AI Researcher</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <select id="filter-skills" class="form-select cf-select" onchange="executeAiSearch()">
+                                    <option value="">Skills</option>
+                                    <option value="Python">Python</option>
+                                    <option value="Transformers">Transformers</option>
+                                    <option value="Agentic UX">Agentic UX</option>
+                                    <option value="Three.js">Three.js</option>
+                                    <option value="PyTorch">PyTorch</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <select id="filter-comp" class="form-select cf-select" onchange="executeAiSearch()">
+                                    <option value="">Compensation</option>
+                                    <option value="140k">$140k+</option>
+                                    <option value="160k">$160k - $210k</option>
+                                    <option value="190k">$190k+</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <select id="filter-model" class="form-select cf-select" onchange="executeAiSearch()">
+                                    <option value="">Working Model</option>
+                                    <option value="Remote">Remote</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                    <option value="Onsite">On-site</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <button type="button" class="btn cf-btn-gradient-cyan w-100" onclick="executeAiSearch()">
+                                    Generate Matching Careers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Split Grid -->
+        <div class="row g-4">
+            
+            <!-- LEFT COLUMN: MY SKILL BLUEPRINT + AUTO-ATS RESUME WIDGET -->
+            <div class="col-lg-4 col-xl-3">
+                <div class="cf-glass-card cf-blueprint-card mb-4">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h5 class="cf-section-title mb-0">My Skill Blueprint</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-link cf-dot-menu p-0" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end cf-dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddSkillModal()">+ Add Skill Node</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="rebalanceSkillGraph()">Rebalance Dynamic Physics</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAtsModal()">ATS Diagnostic Report</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="cf-section-subtitle mb-3">
+                        Interactive 3D/dynamic skill nodes & auto-ATS resume scoring widget
+                    </p>
+
+                    <!-- Interactive Dynamic Skill Nodes Graph -->
+                    <div class="cf-skill-blueprint-graph mb-3" id="skill-graph-container">
+                        <svg id="skill-graph-svg" viewBox="0 0 320 230" width="100%" height="230">
+                            <defs>
+                                <radialGradient id="center_glow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.9"/>
+                                    <stop offset="70%" stop-color="#0284c7" stop-opacity="0.7"/>
+                                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0.4"/>
+                                </radialGradient>
+                                <radialGradient id="node_cyan_glow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.6"/>
+                                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0.2"/>
+                                </radialGradient>
+                                <radialGradient id="node_purple_glow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.6"/>
+                                    <stop offset="100%" stop-color="#6b21a8" stop-opacity="0.2"/>
+                                </radialGradient>
+                                <filter id="glow_filter" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="3" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+
+                            <!-- Connecting glowing lines -->
+                            <g id="skill-graph-lines" stroke="rgba(0, 242, 254, 0.35)" stroke-width="1.8">
+                                <line x1="160" y1="115" x2="80" y2="60" class="graph-line" />
+                                <line x1="160" y1="115" x2="235" y2="60" class="graph-line" />
+                                <line x1="160" y1="115" x2="60" y2="135" class="graph-line" />
+                                <line x1="160" y1="115" x2="260" y2="135" class="graph-line" />
+                                <line x1="160" y1="115" x2="105" y2="190" class="graph-line" />
+                                <line x1="160" y1="115" x2="225" y2="190" class="graph-line" />
+                            </g>
+
+                            <!-- Center Core Node -->
+                            <g class="graph-node-center" transform="translate(160, 115)">
+                                <circle r="34" fill="url(#center_glow)" filter="url(#glow_filter)" />
+                                <circle r="34" fill="none" stroke="#00f2fe" stroke-width="2" stroke-dasharray="4 2" class="rotating-ring" />
+                                <text text-anchor="middle" dy="5" fill="#ffffff" font-size="14" font-weight="700">Skill</text>
+                            </g>
+
+                            <!-- Satellite Nodes Matching Reference Image -->
+                            <!-- Node 1: Top Left (Skills) -->
+                            <g class="graph-node satellite" transform="translate(80, 60)" onclick="filterBySkillNode('Skills')">
+                                <rect x="-30" y="-14" width="60" height="28" rx="14" fill="#0f1f38" stroke="#0284c7" stroke-width="1.5" />
+                                <text text-anchor="middle" dy="4" fill="#7dd3fc" font-size="11" font-weight="600">Skills</text>
+                            </g>
+
+                            <!-- Node 2: Top Right (WBO) -->
+                            <g class="graph-node satellite" transform="translate(235, 60)" onclick="filterBySkillNode('WBO')">
+                                <rect x="-26" y="-14" width="52" height="28" rx="14" fill="#063238" stroke="#00f2fe" stroke-width="1.5" />
+                                <text text-anchor="middle" dy="4" fill="#5eead4" font-size="11" font-weight="600">WBO</text>
+                            </g>
+
+                            <!-- Node 3: Mid Left (Python) -->
+                            <g class="graph-node satellite" transform="translate(60, 135)" onclick="filterBySkillNode('Python')">
+                                <rect x="-28" y="-14" width="56" height="28" rx="14" fill="#0f1f38" stroke="#38bdf8" stroke-width="1.5" />
+                                <text text-anchor="middle" dy="4" fill="#bae6fd" font-size="11" font-weight="600">Python</text>
+                            </g>
+
+                            <!-- Node 4: Mid Right (Python Purple) -->
+                            <g class="graph-node satellite" transform="translate(260, 135)" onclick="filterBySkillNode('Python')">
+                                <rect x="-28" y="-14" width="56" height="28" rx="14" fill="#2e1065" stroke="#a855f7" stroke-width="1.5" />
+                                <text text-anchor="middle" dy="4" fill="#e9d5ff" font-size="11" font-weight="600">Python</text>
+                            </g>
+
+                            <!-- Node 5: Bottom Left (Skills) -->
+                            <g class="graph-node satellite" transform="translate(105, 190)" onclick="filterBySkillNode('Skills')">
+                                <rect x="-28" y="-14" width="56" height="28" rx="14" fill="#0f1f38" stroke="#0284c7" stroke-width="1.5" />
+                                <text text-anchor="middle" dy="4" fill="#7dd3fc" font-size="11" font-weight="600">Skills</text>
+                            </g>
+
+                            <!-- Node 6: Bottom Right (Skills) -->
+                            <g class="graph-node satellite" transform="translate(225, 190)" onclick="filterBySkillNode('Skills')">
+                                <rect x="-28" y="-14" width="56" height="28" rx="14" fill="#0f1f38" stroke="#0284c7" stroke-width="1.5" />
+                                <text text-anchor="middle" dy="4" fill="#7dd3fc" font-size="11" font-weight="600">Skills</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Auto-ATS resume scoring widget (Sub-card in Left Panel) -->
+                    <div class="cf-ats-subcard p-3" onclick="openAtsModal()" title="Click to view ATS Diagnostic">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="cf-ats-title">Auto-ATS resume scoring widget</span>
+                            <button class="btn btn-link cf-dot-menu p-0" onclick="event.stopPropagation(); openAtsModal()">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="cf-ats-label">Skill Fit: <strong class="text-white" id="ats-score-display">{{ profile_user.ats_score if profile_user else 82 }}%</strong></span>
+                        </div>
+                        <div class="cf-progress-track">
+                            <div class="cf-progress-fill" id="ats-progress-bar" style="width: {{ profile_user.ats_score if profile_user else 82 }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT MAIN COLUMN: HYPER-PERSONALIZED OPENINGS -->
+            <div class="col-lg-8 col-xl-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="cf-section-title-large mb-0">Hyper-Personalized Openings</h4>
+                    <div class="dropdown">
+                        <button class="btn btn-link cf-dot-menu p-0" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end cf-dropdown-menu">
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="sortJobsBy('score')">Sort by AI Match Score</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="sortJobsBy('salary')">Sort by Salary Bracket</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="refreshOpenings()">Refresh Live Openings</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dynamic Jobs Cards Grid Container -->
+                <div class="row g-4" id="openings-container">
+                    {% for job in jobs %}
+                    <div class="col-xl-6 job-card-wrapper" data-job-id="{{ job.id }}" data-score="{{ job.match_score }}" data-salary="{{ job.salary_min or 0 }}">
+                        <div class="cf-glass-card cf-job-card h-100 d-flex flex-column">
+                            
+                            <!-- Card Header: Title, Company, Circular Donut Match Gauge -->
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="cf-job-title mb-1">{{ job.title }}</h4>
+                                    <div class="cf-job-company-location text-muted">
+                                        {{ job.company }} ({{ job.working_model }}{% if 'Remote' not in job.location and 'NYC' in job.location %}, NYC{% endif %})
+                                    </div>
+                                </div>
+
+                                <!-- Circular Radial Gauge Matching Reference Image -->
+                                <div class="cf-donut-gauge" title="AI Match Calculation">
+                                    <svg viewBox="0 0 64 64" width="60" height="60">
+                                        <circle cx="32" cy="32" r="26" stroke="rgba(255, 255, 255, 0.08)" stroke-width="4.5" fill="none"/>
+                                        <circle cx="32" cy="32" r="26" stroke="#00f2fe" stroke-width="4.5" fill="none"
+                                                stroke-dasharray="163.36" stroke-dashoffset="{{ 163.36 - (163.36 * job.match_score / 100) }}"
+                                                stroke-linecap="round" class="cf-gauge-circle"/>
+                                    </svg>
+                                    <div class="cf-gauge-text">
+                                        <span class="score">{{ job.match_score }}%</span>
+                                        <span class="label">{{ job.match_badge_text }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mid Section: Match Details or Real-time Interface -->
+                            {% if job.company == 'Synthetix' %}
+                            <!-- Synthetix Real-Time Interface Row matching Screenshot -->
+                            <div class="cf-realtime-interface mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fs-xs text-muted">Real-time Interface</span>
+                                    <span class="text-muted fs-xxs"><i class="bi bi-three-dots"></i></span>
+                                </div>
+                                <div class="fs-xs text-light mb-2">Real-time peer comparisons</div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm cf-btn-secondary" onclick="openPeerComparisonModal({{ job.id }}, '{{ job.title }}', '{{ job.company }}')">
+                                        <i class="bi bi-people-fill text-cyan me-1"></i> Compariton
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center fs-xs mb-1">
+                                    <span class="text-muted">Salary Estimation</span>
+                                    <span class="text-white fw-bold">{{ job.salary_display }}</span>
+                                </div>
+                                <div class="cf-slider-track">
+                                    <div class="cf-slider-gradient" style="width: 78%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 fs-xs text-muted">
+                                <span>Adaptive Screening: <strong class="text-success">{{ job.adaptive_screening }}</strong></span>
+                            </div>
+
+                            {% else %}
+                            <!-- NeuralVibe & other cards matching Screenshot -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center fs-xs mb-1">
+                                    <span class="text-muted">Match Details</span>
+                                </div>
+                                <!-- Segmented progress bar (5 lit segments) -->
+                                <div class="cf-segmented-bar">
+                                    <span class="seg active"></span>
+                                    <span class="seg active"></span>
+                                    <span class="seg active"></span>
+                                    <span class="seg active"></span>
+                                    <span class="seg active"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center fs-xs mb-1">
+                                    <span class="text-muted">Salary</span>
+                                    <span class="text-white fw-semibold">{{ job.salary_display }}</span>
+                                </div>
+                                <!-- Interactive glowing cyan range bar with handle indicator -->
+                                <div class="cf-slider-track">
+                                    <div class="cf-slider-fill" style="width: 82%;">
+                                        <span class="cf-slider-handle"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Skills Pill Section -->
+                            <div class="mb-4">
+                                <div class="fs-xs text-muted mb-2">Skills</div>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    {% for s in job.get_skills_list() %}
+                                    <span class="cf-skill-tag">✓ {{ s }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- CTA Button: Quick Apply with AI Resume -->
+                            <div class="mt-auto">
+                                <button type="button" class="btn cf-btn-quick-apply w-100" 
+                                        onclick="openQuickApplyModal({{ job.id }}, '{{ job.title }}', '{{ job.company }}', {{ job.match_score }}, '{{ job.salary_display }}', '{{ job.skills }}')">
+                                    Quick Apply with AI Resume
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TAB 2: SKILLS MATRIX VIEW -->
+    <div id="tab-skills-matrix" class="cf-tab-panel {% if active_tab == 'skills-matrix' %}active{% endif %}">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="cf-glass-card h-100 p-4">
+                    <h4 class="cf-section-title-large mb-1">Interactive Skills Matrix</h4>
+                    <p class="text-muted fs-sm mb-4">Multidimensional radar comparison against enterprise market benchmarks</p>
+                    <div style="height: 320px; position: relative;">
+                        <canvas id="skillsMatrixRadar"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="cf-glass-card h-100 p-4">
+                    <h4 class="cf-section-title-large mb-1">High-Signal Skill Gaps & Pay Premiums</h4>
+                    <p class="text-muted fs-sm mb-4">Skills that immediately elevate your compensation bracket to $220k+</p>
+                    
+                    <div class="cf-skill-roadmap-list">
+                        <div class="cf-roadmap-item d-flex justify-content-between align-items-center p-3 mb-2">
+                            <div>
+                                <div class="fw-bold text-white mb-1"><i class="bi bi-cpu text-cyan me-2"></i>TensorRT-LLM & Quantization</div>
+                                <div class="text-muted fs-xs">Slashing latency for 70B+ param models in production inference</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">+14% Salary Boost</span>
+                                <div class="fs-xxs text-muted mt-1">42 high-demand roles</div>
+                            </div>
+                        </div>
+
+                        <div class="cf-roadmap-item d-flex justify-content-between align-items-center p-3 mb-2">
+                            <div>
+                                <div class="fw-bold text-white mb-1"><i class="bi bi-diagram-3 text-purple me-2"></i>LangGraph & Stateful Multi-Agent</div>
+                                <div class="text-muted fs-xs">Deterministic state transitions, checkpointing, and human-in-the-loop</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-50">+18% Match Fit</span>
+                                <div class="fs-xxs text-muted mt-1">36 high-demand roles</div>
+                            </div>
+                        </div>
+
+                        <div class="cf-roadmap-item d-flex justify-content-between align-items-center p-3 mb-2">
+                            <div>
+                                <div class="fw-bold text-white mb-1"><i class="bi bi-palette text-pink me-2"></i>Agentic UX & Generative Streaming</div>
+                                <div class="text-muted fs-xs">Zero-latency progressive interfaces with adaptive confidence meters</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50">Core Strength (98%)</span>
+                                <div class="fs-xxs text-muted mt-1">Elena's Flagship</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: AGENT HUB VIEW -->
+    <div id="tab-agent-hub" class="cf-tab-panel {% if active_tab == 'agent-hub' %}active{% endif %}">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="cf-glass-card p-4 h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="cf-agent-badge-icon bg-cyan-glow">
+                            <i class="bi bi-radar fs-4 text-cyan"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white fw-bold mb-0">Agent 01: Auto-Scout</h5>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">Active & Screening</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-sm mb-3">Continuously ingests new openings from global boards and calculates real-time vector cosine similarity.</p>
+                    <div class="cf-stat-mini-box mb-3">
+                        <div class="d-flex justify-content-between text-muted fs-xs">
+                            <span>Openings Screened Today</span>
+                            <strong class="text-white">1,420</strong>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted fs-xs mt-1">
+                            <span>High-Fit Queue (&gt;90%)</span>
+                            <strong class="text-cyan">6 Opportunities</strong>
+                        </div>
+                    </div>
+                    <button class="btn cf-btn-secondary w-100" onclick="alert('Auto-Scout running continuous loop.')">Adjust Scouting Threshold</button>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cf-glass-card p-4 h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="cf-agent-badge-icon bg-purple-glow">
+                            <i class="bi bi-file-earmark-code fs-4 text-purple"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white fw-bold mb-0">Agent 02: Resume Hyper-Tailor</h5>
+                            <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-50">Standby</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-sm mb-3">Rewrites resume impact bullets to maximize ATS keyword alignment while preserving verified truthful achievements.</p>
+                    <div class="cf-stat-mini-box mb-3">
+                        <div class="d-flex justify-content-between text-muted fs-xs">
+                            <span>Avg ATS Score Uplift</span>
+                            <strong class="text-success">+14.2%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted fs-xs mt-1">
+                            <span>Keyword Retention</span>
+                            <strong class="text-white">99.8%</strong>
+                        </div>
+                    </div>
+                    <button class="btn cf-btn-secondary w-100" onclick="openAtsModal()">Launch Hyper-Tailor</button>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cf-glass-card p-4 h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="cf-agent-badge-icon bg-pink-glow">
+                            <i class="bi bi-mic fs-4 text-pink"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white fw-bold mb-0">Agent 03: Mock Interview Coach</h5>
+                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50">Ready</span>
+                        </div>
+                    </div>
+                    <p class="text-muted fs-sm mb-3">Conducts simulated technical deep-dives for NeuralVibe and Synthetix interview loops with immediate feedback.</p>
+                    <div class="cf-stat-mini-box mb-3">
+                        <div class="d-flex justify-content-between text-muted fs-xs">
+                            <span>Target Role Drill</span>
+                            <strong class="text-white">Lead AI Solutions</strong>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted fs-xs mt-1">
+                            <span>Simulated Loop</span>
+                            <strong class="text-warning">System Design & Latency</strong>
+                        </div>
+                    </div>
+                    <button class="btn cf-btn-secondary w-100" onclick="openCopilotChat()">Start Mock Drill</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: MANAGE TALENT VIEW (EMPLOYER & RECRUITER PIPELINE) -->
+    <div id="tab-manage-talent" class="cf-tab-panel {% if active_tab == 'manage-talent' %}active{% endif %}">
+        <div class="cf-glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="cf-section-title-large mb-1">Employer Talent Intelligence</h4>
+                    <p class="text-muted fs-sm mb-0">Inbound candidate pipeline evaluated with vector match scoring</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('jobs.post') }}" class="btn cf-btn-cyan">
+                        <i class="bi bi-plus-lg me-1"></i> Post New AI Role
+                    </a>
+                </div>
+            </div>
+
+            <!-- Talent Pipeline Table -->
+            <div class="table-responsive">
+                <table class="table cf-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Target Role</th>
+                            <th>Match Score</th>
+                            <th>ATS Compatibility</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if all_applications %}
+                            {% for app in all_applications %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="{{ app.applicant.avatar_url if app.applicant else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160' }}" 
+                                             class="cf-avatar-xs" alt="">
+                                        <div>
+                                            <div class="fw-bold text-white">{{ app.applicant.full_name or app.applicant.username if app.applicant else 'Candidate' }}</div>
+                                            <div class="text-muted fs-xxs">{{ app.applicant.headline if app.applicant else '' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="text-light">{{ app.job.title if app.job else 'Position' }}</span></td>
+                                <td><span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50 fs-xs">{{ app.match_score_at_apply }}% Fit</span></td>
+                                <td><span class="text-success fs-xs"><i class="bi bi-shield-check"></i> 98.4% ATS</span></td>
+                                <td><span class="badge bg-secondary">{{ app.status.capitalize() }}</span></td>
+                                <td>
+                                    <button class="btn btn-sm cf-btn-secondary" onclick="alert('Interview fast-track initiated for {{ app.applicant.full_name if app.applicant else '' }}')">
+                                        Fast-Track Interview
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80" 
+                                             class="cf-avatar-xs" alt="">
+                                        <div>
+                                            <div class="fw-bold text-white">Elena Vance</div>
+                                            <div class="text-muted fs-xxs">Lead AI Solutions Architect & Systems Strategist</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="text-light">Lead AI Solutions Architect</span></td>
+                                <td><span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50 fs-xs">98% Fit</span></td>
+                                <td><span class="text-success fs-xs"><i class="bi bi-shield-check"></i> 98.4% ATS</span></td>
+                                <td><span class="badge bg-info bg-opacity-25 text-info">Verified Candidate</span></td>
+                                <td>
+                                    <button class="btn btn-sm cf-btn-secondary" onclick="openPeerComparisonModal(1, 'Lead AI Solutions Architect', 'NeuralVibe')">
+                                        Inspect Profile
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

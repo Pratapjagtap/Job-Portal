@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% block title %}Live Database Explorer — CareerForge AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <!-- Top Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50 fs-xs">
+                    <i class="bi bi-database-fill me-1"></i> {{ stats.db_engine }}
+                </span>
+                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 fs-xs">
+                    <span class="cf-telemetry-dot me-1"></span> {{ stats.status }}
+                </span>
+            </div>
+            <h2 class="text-white fw-bold mb-0">Live Database Explorer</h2>
+            <p class="text-muted fs-sm mb-0">Inspect real-time {{ stats.db_engine }} tables, candidate vectors, and query data.</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <form method="POST" action="{{ url_for('jobs.database_reseed') }}" onsubmit="return confirm('Restore default database records (NeuralVibe, Synthetix, Elena)?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn cf-btn-secondary fs-xs">
+                    <i class="bi bi-arrow-repeat me-1 text-cyan"></i> Re-seed Default Data
+                </button>
+            </form>
+            <a href="{{ url_for('jobs.index') }}" class="btn cf-btn-gradient-cyan fs-xs">
+                <i class="bi bi-grid-fill me-1"></i> Return to Discover
+            </a>
+        </div>
+    </div>
+
+    <!-- Live Telemetry & Health Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="cf-glass-card p-3 text-center">
+                <div class="text-muted fs-xs mb-1">Active Engine</div>
+                <div class="text-white fw-bold fs-6 font-monospace text-truncate" title="{{ stats.db_engine }}">{{ stats.db_engine }}</div>
+                <div class="text-cyan fs-xxs text-truncate" title="{{ stats.db_target }}">{{ stats.db_target }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="cf-glass-card p-3 text-center">
+                <div class="text-muted fs-xs mb-1">Total Users</div>
+                <div class="text-cyan fw-bold fs-4">{{ stats.users_count }}</div>
+                <div class="text-muted fs-xxs">Candidates & Employers</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="cf-glass-card p-3 text-center">
+                <div class="text-muted fs-xs mb-1">Active AI Jobs</div>
+                <div class="text-purple fw-bold fs-4">{{ stats.jobs_count }}</div>
+                <div class="text-muted fs-xxs">Vectorized Openings</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="cf-glass-card p-3 text-center">
+                <div class="text-muted fs-xs mb-1">Applications & Driver</div>
+                <div class="text-success fw-bold fs-4">{{ stats.applications_count }}</div>
+                <div class="text-muted fs-xxs font-monospace">{{ stats.driver }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Navigation Tabs -->
+    <div class="cf-glass-card p-4">
+        <ul class="nav nav-pills cf-nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link cf-tab-link {% if active_table == 'users' %}active{% endif %}" 
+                   href="{{ url_for('jobs.database_explorer', table='users') }}">
+                   <i class="bi bi-people-fill me-1"></i> users table ({{ users|length }})
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link cf-tab-link {% if active_table == 'jobs' %}active{% endif %}" 
+                   href="{{ url_for('jobs.database_explorer', table='jobs') }}">
+                   <i class="bi bi-briefcase-fill me-1"></i> jobs table ({{ jobs|length }})
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link cf-tab-link {% if active_table == 'applications' %}active{% endif %}" 
+                   href="{{ url_for('jobs.database_explorer', table='applications') }}">
+                   <i class="bi bi-send-fill me-1"></i> applications table ({{ applications|length }})
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link cf-tab-link {% if active_table == 'query' %}active{% endif %}" 
+                   href="{{ url_for('jobs.database_explorer', table='query') }}">
+                   <i class="bi bi-terminal-fill me-1 text-cyan"></i> Live SQL Terminal
+                </a>
+            </li>
+        </ul>
+
+        <!-- TABLE 1: USERS -->
+        {% if active_table == 'users' %}
+        <div class="table-responsive">
+            <table class="table cf-table align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Persona / Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Headline</th>
+                        <th>Skills Vector</th>
+                        <th>ATS Fit</th>
+                        <th>Matches</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td><span class="font-monospace text-cyan fw-bold">#{{ u.id }}</span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="{{ u.avatar_url or 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160' }}" 
+                                     class="cf-avatar-xs" alt="">
+                                <div>
+                                    <div class="fw-bold text-white">{{ u.full_name or u.username }}</div>
+                                    <div class="text-muted fs-xxs">@{{ u.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="text-light fs-xs">{{ u.email }}</span></td>
+                        <td>
+                            <span class="badge bg-{{ 'danger' if u.role == 'admin' else ('purple' if u.role == 'employer' else 'cyan') }} bg-opacity-25 text-{{ 'danger' if u.role == 'admin' else ('purple' if u.role == 'employer' else 'cyan') }} border border-opacity-50">
+                                {{ u.role }}
+                            </span>
+                        </td>
+                        <td><div class="text-muted fs-xs text-truncate" style="max-width: 180px;">{{ u.headline }}</div></td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap" style="max-width: 200px;">
+                                {% for s in u.get_skills_list()[:3] %}
+                                <span class="cf-skill-tag fs-xxs">{{ s }}</span>
+                                {% endfor %}
+                                {% if u.get_skills_list()|length > 3 %}
+                                <span class="text-muted fs-xxs">+{{ u.get_skills_list()|length - 3 }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td><span class="badge bg-success bg-opacity-25 text-success">{{ u.ats_score }}%</span></td>
+                        <td><span class="text-cyan fw-bold">{{ u.matches_pct }}%</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- TABLE 2: JOBS -->
+        {% if active_table == 'jobs' %}
+        <div class="table-responsive">
+            <table class="table cf-table align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Role Title</th>
+                        <th>Company</th>
+                        <th>Model</th>
+                        <th>Location</th>
+                        <th>Compensation Band</th>
+                        <th>Match Score</th>
+                        <th>Adaptive Screening</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in jobs %}
+                    <tr>
+                        <td><span class="font-monospace text-cyan fw-bold">#{{ j.id }}</span></td>
+                        <td>
+                            <div class="fw-bold text-white">{{ j.title }}</div>
+                            <div class="text-muted fs-xxs">{{ j.category }}</div>
+                        </td>
+                        <td><span class="text-light fw-semibold">{{ j.company }}</span></td>
+                        <td><span class="badge bg-purple bg-opacity-25 text-purple">{{ j.working_model }}</span></td>
+                        <td><span class="text-muted fs-xs">{{ j.location }}</span></td>
+                        <td><span class="text-success fw-bold fs-xs">{{ j.salary_display }}</span></td>
+                        <td><span class="text-cyan fw-bold">{{ j.match_score }}% ({{ j.match_badge_text }})</span></td>
+                        <td><span class="badge bg-info bg-opacity-25 text-info">{{ j.adaptive_screening }}</span></td>
+                        <td>
+                            <a href="{{ url_for('jobs.detail', job_id=j.id) }}" class="btn btn-sm cf-btn-secondary fs-xs">
+                                Inspect
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- TABLE 3: APPLICATIONS -->
+        {% if active_table == 'applications' %}
+        <div class="table-responsive">
+            <table class="table cf-table align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Position Applied</th>
+                        <th>Applicant</th>
+                        <th>Fit Score</th>
+                        <th>Status</th>
+                        <th>Cover Pitch Snippet</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if applications %}
+                        {% for a in applications %}
+                        <tr>
+                            <td><span class="font-monospace text-cyan fw-bold">#{{ a.id }}</span></td>
+                            <td>
+                                <a href="{{ url_for('jobs.detail', job_id=a.job_id) }}" class="text-white fw-bold text-decoration-none">
+                                    {{ a.job.title }}
+                                </a>
+                                <div class="text-muted fs-xxs">{{ a.job.company }}</div>
+                            </td>
+                            <td>
+                                <div class="text-light fw-semibold">{{ a.applicant.full_name or a.applicant.username }}</div>
+                                <div class="text-muted fs-xxs">{{ a.applicant.email }}</div>
+                            </td>
+                            <td><span class="badge bg-cyan bg-opacity-25 text-cyan border border-cyan border-opacity-50">{{ a.match_score_at_apply }}%</span></td>
+                            <td><span class="badge bg-secondary">{{ a.status|capitalize }}</span></td>
+                            <td>
+                                <div class="text-muted fs-xxs text-truncate" style="max-width: 220px;" title="{{ a.cover_letter }}">
+                                    {{ a.cover_letter or 'No letter attached' }}
+                                </div>
+                            </td>
+                            <td><span class="text-muted fs-xs">{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No applications recorded yet. Click "Quick Apply with AI Resume" on any opening on the Discover tab!
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- TABLE 4: LIVE SQL QUERY TERMINAL -->
+        {% if active_table == 'query' %}
+        <div>
+            <h5 class="text-white fw-bold mb-2"><i class="bi bi-terminal text-cyan me-1"></i> Interactive SQL Query Terminal</h5>
+            <p class="text-muted fs-xs mb-3">Execute read-only SQL queries directly against SQLite <code>instance/portal.db</code>.</p>
+
+            <form method="POST" action="{{ url_for('jobs.database_query') }}" class="mb-4">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-2">
+                    <textarea name="sql_query" rows="3" class="form-control cf-input font-monospace fs-sm" 
+                              placeholder="SELECT id, username, full_name, role, skills, ats_score FROM users;">{{ query_text or 'SELECT id, title, company, salary_display, match_score, working_model FROM jobs ORDER BY match_score DESC;' }}</textarea>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs" 
+                                onclick="document.querySelector('[name=sql_query]').value='SELECT id, username, full_name, role, ats_score, skills FROM users;'">
+                            Select Users
+                        </button>
+                        <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs" 
+                                onclick="document.querySelector('[name=sql_query]').value='SELECT id, title, company, salary_display, match_score FROM jobs;'">
+                            Select Jobs
+                        </button>
+                        <button type="button" class="btn btn-sm cf-btn-secondary fs-xxs" 
+                                onclick="document.querySelector('[name=sql_query]').value='SELECT a.id, j.title, u.full_name, a.match_score_at_apply, a.created_at FROM applications a JOIN jobs j ON a.job_id = j.id JOIN users u ON a.user_id = u.id;'">
+                            Select Applications
+                        </button>
+                    </div>
+                    <button type="submit" class="btn cf-btn-gradient-cyan fs-xs px-3">
+                        <i class="bi bi-play-fill me-1"></i> Execute SQL
+                    </button>
+                </div>
+            </form>
+
+            {% if query_error %}
+            <div class="alert cf-alert-danger mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> SQL Execution Error: {{ query_error }}
+            </div>
+            {% endif %}
+
+            {% if query_rows %}
+            <div class="cf-telemetry-card p-3">
+                <div class="d-flex justify-content-between text-muted fs-xxs mb-2">
+                    <span>Query Result: <strong>{{ query_rows|length }} row(s) returned</strong></span>
+                    <span>Status: <strong class="text-success">OK</strong></span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table cf-table align-middle mb-0 font-monospace fs-xs">
+                        <thead>
+                            <tr>
+                                {% for col in query_columns %}
+                                <th>{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in query_rows %}
+                            <tr>
+                                {% for col in query_columns %}
+                                <td>{{ row[col] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% elif query_text and not query_error %}
+            <div class="alert cf-alert mb-0">Query executed successfully: 0 rows returned.</div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

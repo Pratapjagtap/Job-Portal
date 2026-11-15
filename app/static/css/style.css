@@ -1,0 +1,1158 @@
+/* ==========================================================================
+   CareerForge AI — Next-Gen Cyber-Luminescent Design System
+   ========================================================================== */
+
+:root {
+    --cf-bg-base: #070913;
+    --cf-bg-card: rgba(14, 20, 36, 0.72);
+    --cf-bg-card-hover: rgba(18, 27, 49, 0.85);
+    --cf-border: rgba(0, 242, 254, 0.16);
+    --cf-border-hover: rgba(0, 242, 254, 0.45);
+    --cf-border-subtle: rgba(255, 255, 255, 0.08);
+
+    --cf-cyan: #00f2fe;
+    --cf-cyan-dim: #0284c7;
+    --cf-cyan-glow: rgba(0, 242, 254, 0.35);
+    --cf-purple: #8b5cf6;
+    --cf-purple-glow: rgba(139, 92, 246, 0.35);
+    --cf-magenta: #ec4899;
+    --cf-emerald: #00f5a0;
+
+    --cf-text-main: #f8fafc;
+    --cf-text-muted: #94a3b8;
+    --cf-text-dim: #64748b;
+
+    --cf-radius-sm: 8px;
+    --cf-radius-md: 14px;
+    --cf-radius-lg: 20px;
+    --cf-radius-pill: 9999px;
+
+    --cf-font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --cf-font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Base Body & Reset */
+* {
+    box-sizing: border-box;
+}
+
+body.careerforge-dark {
+    margin: 0;
+    padding: 0;
+    background-color: var(--cf-bg-base);
+    color: var(--cf-text-main);
+    font-family: var(--cf-font-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    background-image: 
+        radial-gradient(circle at 15% 10%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(0, 242, 254, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
+}
+
+/* Ambient Glow Orbs */
+.ambient-glow {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(120px);
+    z-index: 0;
+    opacity: 0.5;
+}
+.glow-cyan {
+    width: 480px;
+    height: 480px;
+    top: -100px;
+    right: 5%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.25) 0%, transparent 70%);
+}
+.glow-purple {
+    width: 520px;
+    height: 520px;
+    top: 30%;
+    left: -150px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.22) 0%, transparent 70%);
+}
+.glow-magenta {
+    width: 380px;
+    height: 380px;
+    bottom: 5%;
+    right: 15%;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.18) 0%, transparent 70%);
+}
+
+/* Typography Utilities */
+.fs-xs { font-size: 0.8rem !important; }
+.fs-xxs { font-size: 0.72rem !important; }
+.text-cyan { color: var(--cf-cyan) !important; }
+.text-purple { color: var(--cf-purple) !important; }
+.text-pink { color: var(--cf-magenta) !important; }
+
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
+.cf-navbar-wrapper {
+    background: rgba(7, 9, 19, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--cf-border-subtle);
+    z-index: 1020;
+}
+
+.cf-navbar {
+    padding: 0.85rem 0;
+}
+
+.cf-brand {
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+}
+.cf-brand:hover {
+    color: #ffffff;
+}
+
+.cf-logo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.6));
+    animation: pulseLogo 3s infinite alternate ease-in-out;
+}
+
+@keyframes pulseLogo {
+    0% { filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.4)); }
+    100% { filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.7)); }
+}
+
+.cf-ai-badge {
+    background: linear-gradient(135deg, var(--cf-cyan), var(--cf-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+}
+
+/* Nav Tabs */
+.cf-nav-tabs {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.cf-tab-link {
+    color: var(--cf-text-muted) !important;
+    font-size: 0.92rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--cf-radius-pill);
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+.cf-tab-link:hover {
+    color: #ffffff !important;
+}
+
+.cf-tab-link.active {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.cf-tab-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 20%;
+    right: 20%;
+    height: 2.5px;
+    background: var(--cf-cyan);
+    border-radius: 4px;
+    box-shadow: 0 0 12px var(--cf-cyan), 0 0 4px #ffffff;
+}
+
+.cf-subtle {
+    color: var(--cf-text-dim);
+    font-size: 0.85em;
+}
+
+/* Right User Profile Capsule Pill */
+.cf-profile-pill {
+    background: rgba(14, 22, 40, 0.85);
+    border: 1.5px solid var(--cf-cyan);
+    box-shadow: 0 0 14px rgba(0, 242, 254, 0.25);
+    border-radius: var(--cf-radius-pill);
+    padding: 0.28rem 0.85rem 0.28rem 0.35rem;
+    color: #ffffff;
+    transition: all 0.25s ease;
+}
+
+.cf-profile-pill:hover, .cf-profile-pill:focus {
+    background: rgba(20, 32, 58, 0.95);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.45);
+    border-color: #5eead4;
+    color: #ffffff;
+}
+
+.cf-avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--cf-cyan);
+}
+
+.cf-matches-badge {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: #e2e8f0;
+}
+
+.cf-matches-badge strong {
+    color: #ffffff;
+}
+
+.cf-triangle-up {
+    color: #f43f5e;
+    font-size: 0.65rem;
+    margin-left: 2px;
+    display: inline-block;
+    filter: drop-shadow(0 0 4px #f43f5e);
+}
+
+.cf-avatar-xs {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--cf-border);
+}
+
+.cf-btn-post {
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid var(--cf-purple);
+    color: #ffffff;
+    border-radius: var(--cf-radius-pill);
+    padding: 0.38rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.cf-btn-post:hover {
+    background: var(--cf-purple);
+    color: #ffffff;
+    box-shadow: 0 0 16px var(--cf-purple-glow);
+}
+
+/* Dropdown Menus */
+.cf-dropdown-menu {
+    background: rgba(13, 19, 36, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--cf-border);
+    border-radius: var(--cf-radius-md);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    padding: 0.5rem;
+}
+
+.cf-dropdown-menu .dropdown-item {
+    color: var(--cf-text-muted);
+    font-size: 0.86rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--cf-radius-sm);
+    transition: all 0.2s;
+}
+
+.cf-dropdown-menu .dropdown-item:hover {
+    background: rgba(0, 242, 254, 0.12);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   Hero Section & 3D Particle Mesh Wave
+   ========================================================================== */
+.cf-hero-section {
+    position: relative;
+    padding: 1.8rem 0 0.5rem;
+    overflow: visible;
+}
+
+.cf-hero-title {
+    font-size: clamp(2.3rem, 4.5vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    color: #ffffff;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+
+.cf-particle-col {
+    min-height: 180px;
+}
+
+.cf-particle-container {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 85%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 85%);
+}
+
+.cf-particle-container:active {
+    cursor: grabbing;
+}
+
+/* ==========================================================================
+   Glassmorphism Cards & Panels
+   ========================================================================== */
+.cf-glass-card {
+    background: var(--cf-bg-card);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--cf-border-subtle);
+    border-radius: var(--cf-radius-lg);
+    padding: 1.35rem;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.25s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.cf-glass-card:hover {
+    border-color: rgba(0, 242, 254, 0.28);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+.cf-console-label {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: #cbd5e1;
+}
+
+.cf-section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.cf-section-subtitle {
+    font-size: 0.76rem;
+    color: var(--cf-text-dim);
+    line-height: 1.4;
+}
+
+.cf-section-title-large {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+}
+
+.cf-dot-menu {
+    color: var(--cf-text-dim);
+    font-size: 1.1rem;
+    line-height: 1;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.cf-dot-menu:hover {
+    color: #ffffff;
+}
+
+/* Upper Consoles Inputs */
+.cf-search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cf-search-input {
+    background: rgba(9, 14, 26, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: var(--cf-radius-pill) !important;
+    color: #ffffff !important;
+    font-size: 0.88rem;
+    padding: 0.72rem 3rem 0.72rem 1.25rem !important;
+    transition: all 0.25s ease;
+}
+
+.cf-search-input::placeholder {
+    color: var(--cf-text-dim);
+    font-size: 0.86rem;
+}
+
+.cf-search-input:focus {
+    border-color: var(--cf-cyan) !important;
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.3) !important;
+}
+
+.cf-btn-send-plane {
+    position: absolute;
+    right: 6px;
+    background: transparent;
+    border: none;
+    color: var(--cf-cyan);
+    padding: 0.4rem 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.cf-btn-send-plane:hover {
+    transform: translateX(2px) scale(1.08);
+    filter: drop-shadow(0 0 8px var(--cf-cyan));
+}
+
+/* Smart Matrix Selects */
+.cf-select {
+    background-color: rgba(9, 14, 26, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+    border-radius: var(--cf-radius-sm) !important;
+    font-size: 0.8rem !important;
+    padding: 0.45rem 1.8rem 0.45rem 0.65rem !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
+.cf-select:focus {
+    border-color: var(--cf-cyan) !important;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.25) !important;
+}
+
+/* Gradient Cyan Action Button */
+.cf-btn-gradient-cyan {
+    background: linear-gradient(90deg, #00f2fe 0%, #0284c7 100%);
+    color: #070913;
+    font-weight: 700;
+    font-size: 0.88rem;
+    border: none;
+    border-radius: var(--cf-radius-sm);
+    padding: 0.55rem 1.25rem;
+    box-shadow: 0 0 18px rgba(0, 242, 254, 0.45);
+    transition: all 0.25s ease;
+}
+
+.cf-btn-gradient-cyan:hover {
+    background: linear-gradient(90deg, #38bdf8 0%, #00f2fe 100%);
+    color: #000000;
+    box-shadow: 0 0 26px rgba(0, 242, 254, 0.7);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Skill Blueprint & Interactive SVG Node Graph
+   ========================================================================== */
+.cf-blueprint-card {
+    border: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+.cf-skill-blueprint-graph {
+    background: rgba(9, 14, 26, 0.75);
+    border-radius: var(--cf-radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    position: relative;
+    padding: 0.5rem;
+}
+
+.graph-node.satellite {
+    cursor: pointer;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.graph-node.satellite:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8));
+}
+
+.rotating-ring {
+    animation: spinRing 24s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes spinRing {
+    100% { transform: rotate(360deg); }
+}
+
+/* ATS Subcard in Left Panel */
+.cf-ats-subcard {
+    background: rgba(9, 15, 28, 0.9);
+    border: 1px solid rgba(0, 242, 254, 0.16);
+    border-radius: var(--cf-radius-md);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.cf-ats-subcard:hover {
+    border-color: var(--cf-cyan);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+    transform: translateY(-2px);
+}
+
+.cf-ats-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+
+.cf-ats-label {
+    font-size: 0.82rem;
+    color: var(--cf-text-muted);
+}
+
+/* Progress Track and Glowing Fills */
+.cf-progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+}
+
+.cf-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284c7 0%, #00f2fe 65%, #00f5a0 100%);
+    border-radius: 99px;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.7);
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Hyper-Personalized Openings Job Cards
+   ========================================================================== */
+.cf-job-card {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(14, 20, 36, 0.78);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cf-job-card:hover {
+    border-color: rgba(0, 242, 254, 0.4);
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 254, 0.15);
+    transform: translateY(-4px);
+}
+
+.cf-job-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+}
+
+.cf-job-company-location {
+    font-size: 0.84rem;
+    color: #94a3b8;
+}
+
+/* Donut Radial Gauge SVG */
+.cf-donut-gauge {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cf-gauge-circle {
+    transition: stroke-dashoffset 1s ease-in-out;
+    filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.6));
+}
+
+.cf-gauge-text {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+}
+
+.cf-gauge-text .score {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.cf-gauge-text .label {
+    font-size: 0.54rem;
+    color: var(--cf-cyan);
+    font-weight: 600;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+/* Segmented Bar (5 segments) */
+.cf-segmented-bar {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.cf-segmented-bar .seg {
+    height: 5px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.cf-segmented-bar .seg.active {
+    background: var(--cf-cyan);
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.6);
+}
+
+/* Glowing Slider Range Track & Handle */
+.cf-slider-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    position: relative;
+    overflow: visible;
+}
+
+.cf-slider-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284c7, #00f2fe);
+    border-radius: 99px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+}
+
+.cf-slider-handle {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate(50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid var(--cf-cyan);
+    box-shadow: 0 0 10px var(--cf-cyan);
+}
+
+.cf-slider-gradient {
+    height: 100%;
+    background: linear-gradient(90deg, #0284c7, #00f2fe, #a855f7);
+    border-radius: 99px;
+}
+
+/* Real-time Interface Box in Synthetix */
+.cf-realtime-interface {
+    background: rgba(9, 14, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--cf-radius-sm);
+    padding: 0.75rem;
+}
+
+/* Skill Tags */
+.cf-skill-tag {
+    background: rgba(14, 26, 48, 0.8);
+    border: 1px solid rgba(0, 242, 254, 0.22);
+    color: #bae6fd;
+    font-size: 0.76rem;
+    font-weight: 500;
+    padding: 0.22rem 0.65rem;
+    border-radius: var(--cf-radius-pill);
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Quick Apply with AI Resume CTA Button (Wide Glowing Pill Outline) */
+.cf-btn-quick-apply {
+    background: rgba(0, 242, 254, 0.06);
+    border: 1.5px solid var(--cf-cyan);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.88rem;
+    border-radius: var(--cf-radius-pill);
+    padding: 0.65rem 1.25rem;
+    box-shadow: 0 0 14px rgba(0, 242, 254, 0.25);
+    transition: all 0.25s ease;
+}
+
+.cf-btn-quick-apply:hover {
+    background: var(--cf-cyan);
+    color: #070913;
+    font-weight: 700;
+    box-shadow: 0 0 24px rgba(0, 242, 254, 0.65);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Copilot Assistant Floating Widget (Bottom-Right)
+   ========================================================================== */
+.cf-copilot-floating {
+    position: fixed;
+    bottom: 22px;
+    right: 24px;
+    z-index: 1040;
+    max-width: 290px;
+    width: 100%;
+}
+
+.cf-copilot-card {
+    background: rgba(13, 19, 36, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(0, 242, 254, 0.35);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 254, 0.2);
+    border-radius: var(--cf-radius-md);
+    padding: 0.95rem;
+    transition: all 0.25s ease;
+}
+
+.cf-copilot-card:hover {
+    border-color: var(--cf-cyan);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 28px rgba(0, 242, 254, 0.35);
+}
+
+.cf-copilot-avatar-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cf-copilot-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.cf-copilot-text {
+    font-size: 0.74rem;
+    color: #cbd5e1;
+    line-height: 1.35;
+    margin-bottom: 0.65rem;
+    cursor: pointer;
+}
+.cf-copilot-text:hover {
+    color: #ffffff;
+}
+
+/* Frequency Waveform Equalizer Animation */
+.cf-waveform-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(7, 11, 22, 0.8);
+    border: 1px solid rgba(0, 242, 254, 0.15);
+    border-radius: var(--cf-radius-sm);
+    padding: 0.45rem 0.65rem;
+    cursor: pointer;
+}
+
+.cf-waveform-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 24px;
+}
+
+.cf-waveform-bars .bar {
+    width: 3px;
+    background: linear-gradient(180deg, var(--cf-cyan), var(--cf-purple));
+    border-radius: 2px;
+    animation: waveBounce 1.2s infinite ease-in-out alternate;
+}
+
+.bar-1  { height: 8px;  animation-delay: 0.1s; }
+.bar-2  { height: 16px; animation-delay: 0.3s; }
+.bar-3  { height: 12px; animation-delay: 0.15s; }
+.bar-4  { height: 20px; animation-delay: 0.45s; }
+.bar-5  { height: 6px;  animation-delay: 0.2s; }
+.bar-6  { height: 18px; animation-delay: 0.5s; }
+.bar-7  { height: 14px; animation-delay: 0.25s; }
+.bar-8  { height: 22px; animation-delay: 0.6s; }
+.bar-9  { height: 10px; animation-delay: 0.35s; }
+.bar-10 { height: 16px; animation-delay: 0.55s; }
+.bar-11 { height: 8px;  animation-delay: 0.15s; }
+.bar-12 { height: 19px; animation-delay: 0.4s; }
+.bar-13 { height: 13px; animation-delay: 0.3s; }
+.bar-14 { height: 7px;  animation-delay: 0.2s; }
+.bar-15 { height: 15px; animation-delay: 0.5s; }
+.bar-16 { height: 11px; animation-delay: 0.1s; }
+
+@keyframes waveBounce {
+    0% { transform: scaleY(0.35); }
+    100% { transform: scaleY(1.3); }
+}
+
+.cf-telemetry-tag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--cf-font-mono);
+    font-size: 0.68rem;
+    color: var(--cf-cyan);
+}
+
+.cf-telemetry-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cf-cyan);
+    box-shadow: 0 0 6px var(--cf-cyan);
+    animation: pulseDot 1.4s infinite alternate;
+}
+
+@keyframes pulseDot {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+/* ==========================================================================
+   Modals & Offcanvas Dialogs
+   ========================================================================== */
+.cf-modal-glass {
+    background: rgba(12, 17, 34, 0.94);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1.5px solid var(--cf-border);
+    border-radius: var(--cf-radius-lg);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 242, 254, 0.2);
+}
+
+.cf-modal-badge {
+    background: rgba(0, 242, 254, 0.12);
+    border: 1px solid var(--cf-cyan);
+    color: var(--cf-cyan);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.28rem 0.75rem;
+    border-radius: var(--cf-radius-pill);
+}
+
+.cf-match-pill-large {
+    background: rgba(14, 25, 46, 0.85);
+    border: 1.5px solid var(--cf-cyan);
+    border-radius: var(--cf-radius-md);
+    padding: 0.5rem 1rem;
+    text-align: center;
+}
+
+.cf-telemetry-card {
+    background: rgba(8, 12, 24, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--cf-radius-md);
+}
+
+.cf-tag-pill {
+    font-size: 0.74rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--cf-radius-pill);
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cf-tag-pill.active {
+    background: rgba(0, 242, 254, 0.12);
+    color: #38bdf8;
+    border-color: rgba(0, 242, 254, 0.35);
+}
+
+.cf-tag-pill.warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.cf-input, .cf-textarea {
+    background: rgba(8, 12, 24, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    border-radius: var(--cf-radius-sm) !important;
+}
+
+.cf-input:focus, .cf-textarea:focus {
+    border-color: var(--cf-cyan) !important;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.25) !important;
+}
+
+.cf-btn-cyan {
+    background: var(--cf-cyan);
+    color: #070913;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--cf-radius-pill);
+    padding: 0.55rem 1.35rem;
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.45);
+    transition: all 0.2s ease;
+}
+
+.cf-btn-cyan:hover {
+    background: #38bdf8;
+    box-shadow: 0 0 24px rgba(0, 242, 254, 0.7);
+    color: #000000;
+}
+
+.cf-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--cf-radius-pill);
+    font-size: 0.85rem;
+    padding: 0.5rem 1.15rem;
+    transition: all 0.2s;
+}
+
+.cf-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+/* Offcanvas Copilot Chat Drawer */
+.cf-offcanvas {
+    background: rgba(10, 15, 30, 0.96) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-left: 1.5px solid var(--cf-border) !important;
+    width: 420px !important;
+}
+
+.cf-chat-bubble {
+    padding: 0.85rem 1rem;
+    border-radius: var(--cf-radius-md);
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.cf-chat-bubble.assistant {
+    background: rgba(16, 24, 46, 0.9);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    color: #e2e8f0;
+}
+
+.cf-chat-bubble.user {
+    background: rgba(139, 92, 246, 0.25);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: #ffffff;
+    align-self: flex-end;
+}
+
+.cf-chat-meta {
+    font-size: 0.7rem;
+    color: var(--cf-cyan);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+}
+
+.cf-chip {
+    background: rgba(9, 14, 26, 0.85);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    color: #7dd3fc;
+    font-size: 0.74rem;
+    border-radius: var(--cf-radius-pill);
+    padding: 0.25rem 0.65rem;
+}
+.cf-chip:hover {
+    background: rgba(0, 242, 254, 0.15);
+    color: #ffffff;
+    border-color: var(--cf-cyan);
+}
+
+.cf-chat-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cf-btn-send {
+    position: absolute;
+    right: 8px;
+    background: transparent;
+    border: none;
+    padding: 0.4rem;
+    cursor: pointer;
+}
+
+/* Flash alerts */
+.cf-alert {
+    background: rgba(14, 22, 42, 0.9);
+    border: 1px solid var(--cf-border);
+    color: #ffffff;
+    border-radius: var(--cf-radius-md);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.cf-alert-success {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    color: #a7f3d0;
+}
+.cf-alert-warning {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fde68a;
+}
+.cf-alert-danger {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+/* Tabs & Panels */
+.cf-tab-panel {
+    display: none;
+}
+.cf-tab-panel.active {
+    display: block;
+    animation: fadeInTab 0.3s ease;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Table styling for talent */
+.cf-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.cf-table th {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    color: var(--cf-text-dim);
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.85rem;
+}
+.cf-table td {
+    padding: 0.95rem 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cf-box-dark {
+    background: rgba(8, 12, 24, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--cf-radius-md);
+}
+
+.cf-stat-mini-box {
+    background: rgba(8, 12, 24, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--cf-radius-sm);
+    padding: 0.65rem 0.85rem;
+}
+
+.cf-roadmap-item {
+    background: rgba(8, 12, 24, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--cf-radius-md);
+    transition: all 0.2s;
+}
+.cf-roadmap-item:hover {
+    border-color: rgba(0, 242, 254, 0.25);
+    transform: translateX(4px);
+}
+
+/* Agent badges */
+.cf-agent-badge-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--cf-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.bg-cyan-glow {
+    background: rgba(0, 242, 254, 0.15);
+    border: 1px solid var(--cf-cyan);
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.35);
+}
+.bg-purple-glow {
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid var(--cf-purple);
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.35);
+}
+.bg-pink-glow {
+    background: rgba(236, 72, 153, 0.15);
+    border: 1px solid var(--cf-magenta);
+    box-shadow: 0 0 16px rgba(236, 72, 153, 0.35);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(7, 9, 19, 0.6);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 254, 0.2);
+    border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 242, 254, 0.5);
+}
+
+/* ==========================================================================
+   Fast Guide Banner & Custom Profile / Database Enhancements
+   ========================================================================== */
+.cf-fast-guide-banner {
+    background: rgba(14, 24, 46, 0.85);
+    border: 1px solid rgba(0, 242, 254, 0.28);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.12);
+}
+
+.cf-guide-step {
+    background: rgba(8, 14, 28, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--cf-radius-sm);
+    line-height: 1.35;
+}
+
+.cf-nav-database-link {
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    color: var(--cf-cyan) !important;
+}
+
+.cf-nav-database-link:hover {
+    background: rgba(0, 242, 254, 0.2);
+    box-shadow: 0 0 14px rgba(0, 242, 254, 0.35);
+}
+
+.cf-nav-profile-link {
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    color: #c084fc !important;
+}
+
+.cf-nav-profile-link:hover {
+    background: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.35);
+}
+
+.cf-avatar-choice {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    padding: 2px;
+}
+
+.cf-avatar-choice:hover {
+    border-color: var(--cf-cyan);
+    transform: scale(1.15);
+    box-shadow: 0 0 12px var(--cf-cyan);
+}

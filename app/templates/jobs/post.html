@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if job else 'Post' }} AI Career Opening — CareerForge AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="cf-glass-card p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="cf-modal-badge"><i class="bi bi-broadcast-pin"></i> Employer Deployment</span>
+                </div>
+                <h3 class="text-white fw-bold mb-1">{{ 'Edit Job Opening' if job else 'Post a New AI Role' }}</h3>
+                <p class="text-muted fs-sm mb-4">Your opening will be vectorized and mapped to candidate Skill Blueprints in real time.</p>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            {{ form.title.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.title(class="form-control cf-input", placeholder="e.g. Lead AI Solutions Architect") }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.company.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.company(class="form-control cf-input", placeholder="e.g. NeuralVibe") }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            {{ form.location.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.location(class="form-control cf-input", placeholder="e.g. Remote or Hybrid, NYC") }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.category.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.category(class="form-select cf-select") }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.job_type.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.job_type(class="form-select cf-select") }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            {{ form.salary_min.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.salary_min(class="form-control cf-input", placeholder="160000") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.salary_max.label(class="form-label text-muted fs-xs fw-semibold") }}
+                            {{ form.salary_max(class="form-control cf-input", placeholder="210000") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label text-muted fs-xs fw-semibold") }}
+                        {{ form.description(class="form-control cf-input cf-textarea", rows=7, 
+                           placeholder="Detail architectural scope, required tech stack (Python, Transformers, Three.js, etc.), and expected agentic throughput.") }}
+                        {% for e in form.description.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn cf-btn-gradient-cyan px-4">
+                            <i class="bi bi-cpu me-1"></i> {{ 'Save Changes' if job else 'Deploy AI Opening' }}
+                        </button>
+                        <a href="{{ url_for('jobs.my_jobs') if job else url_for('jobs.index') }}" class="btn cf-btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
